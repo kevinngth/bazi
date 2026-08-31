@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How a BaZi Chart Is Cast: Pillars, Day Master, Elements and Ten Gods (八字)</title>
+<meta name="description" content="A plain-English guide to reading a BaZi chart: what the four pillars are, how the year changes at 立春 rather than New Year, what a Day Master is, how the five elements and ten gods are counted, and how to apply it all.">
+<link rel="canonical" href="https://example.github.io/bazi-calculator/guide.html">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="How a BaZi Chart Is Cast (八字)">
+<meta property="og:description" content="What the four pillars are, where they come from, and how to read your own chart. No jargon left untranslated.">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='3' fill='%23ae4326'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='%23f8f3e9' font-family='serif'>命</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <div class="head-main">
+      <span class="seal" aria-hidden="true">命</span>
+      <div>
+        <h1>How a chart is cast <span class="hz" lang="zh">八字</span></h1>
+        <p class="tagline">What the eight characters are, where they come from, and how to read yours.</p>
+      </div>
+    </div>
+    <a class="head-link" href="index.html">← Cast my chart</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <nav class="card toc" aria-labelledby="toc-h">
+    <h2 id="toc-h" class="card-title">On this page</h2>
+    <ol class="toc-list">
+      <li><a href="#basics">The eight characters</a></li>
+      <li><a href="#pillars">Where each pillar comes from</a></li>
+      <li><a href="#terms">Why your year may not be the year you think</a></li>
+      <li><a href="#solar-time">True solar time</a></li>
+      <li><a href="#day-master">Your Day Master</a></li>
+      <li><a href="#elements">The five elements</a></li>
+      <li><a href="#hidden-stems">Hidden stems, and why two counts differ</a></li>
+      <li><a href="#ten-gods">The Ten Gods</a></li>
+      <li><a href="#apply">Putting it to use</a></li>
+      <li><a href="#limits">What this calculator does not do</a></li>
+    </ol>
+  </nav>
+
+  <!-- ─────────────────────────────────────────────────────── -->
+  <section class="card prose" id="basics" aria-labelledby="basics-h">
+    <h2 id="basics-h" class="card-title">The eight characters</h2>
+
+    <p>BaZi means <b>eight characters</b>. Your birth moment is written as four pairs of
+    Chinese characters, and those eight characters are the whole chart. Everything a reader
+    says comes out of them.</p>
+
+    <p>Each pair is called a <b>pillar</b> (柱), and there are four: <b>year, month, day and
+    hour</b>. Hence the other name, the Four Pillars of Destiny (四柱命理).</p>
+
+    <p>The top character of each pillar is a <b>heavenly stem</b> (天干). There are ten of them,
+    and they are simply the five elements in a yang and a yin version:</p>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <caption>The ten heavenly stems 天干</caption>
+        <thead><tr><th>Stem</th><th>Element</th><th>Polarity</th><th>Classic image</th></tr></thead>
+        <tbody>
+          <tr><td lang="zh">甲</td><td>Wood</td><td>Yang</td><td>the tall tree</td></tr>
+          <tr><td lang="zh">乙</td><td>Wood</td><td>Yin</td><td>the vine</td></tr>
+          <tr><td lang="zh">丙</td><td>Fire</td><td>Yang</td><td>the sun</td></tr>
+          <tr><td lang="zh">丁</td><td>Fire</td><td>Yin</td><td>the lamp</td></tr>
+          <tr><td lang="zh">戊</td><td>Earth</td><td>Yang</td><td>the mountain</td></tr>
+          <tr><td lang="zh">己</td><td>Earth</td><td>Yin</td><td>the field</td></tr>
+          <tr><td lang="zh">庚</td><td>Metal</td><td>Yang</td><td>the blade</td></tr>
+          <tr><td lang="zh">辛</td><td>Metal</td><td>Yin</td><td>the jewel</td></tr>
+          <tr><td lang="zh">壬</td><td>Water</td><td>Yang</td><td>the ocean</td></tr>
+          <tr><td lang="zh">癸</td><td>Water</td><td>Yin</td><td>the rain</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The bottom character is an <b>earthly branch</b> (地支). There are twelve, and you already
+    know them — they are the zodiac animals. Each branch also carries an element, and a two-hour
+    slice of the day:</p>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <caption>The twelve earthly branches 地支</caption>
+        <thead><tr><th>Branch</th><th>Animal</th><th>Element</th><th>Hours</th></tr></thead>
+        <tbody>
+          <tr><td lang="zh">子</td><td>Rat</td><td>Water</td><td>23:00–01:00</td></tr>
+          <tr><td lang="zh">丑</td><td>Ox</td><td>Earth</td><td>01:00–03:00</td></tr>
+          <tr><td lang="zh">寅</td><td>Tiger</td><td>Wood</td><td>03:00–05:00</td></tr>
+          <tr><td lang="zh">卯</td><td>Rabbit</td><td>Wood</td><td>05:00–07:00</td></tr>
+          <tr><td lang="zh">辰</td><td>Dragon</td><td>Earth</td><td>07:00–09:00</td></tr>
+          <tr><td lang="zh">巳</td><td>Snake</td><td>Fire</td><td>09:00–11:00</td></tr>
+          <tr><td lang="zh">午</td><td>Horse</td><td>Fire</td><td>11:00–13:00</td></tr>
+          <tr><td lang="zh">未</td><td>Goat</td><td>Earth</td><td>13:00–15:00</td></tr>
+          <tr><td lang="zh">申</td><td>Monkey</td><td>Metal</td><td>15:00–17:00</td></tr>
+          <tr><td lang="zh">酉</td><td>Rooster</td><td>Metal</td><td>17:00–19:00</td></tr>
+          <tr><td lang="zh">戌</td><td>Dog</td><td>Earth</td><td>19:00–21:00</td></tr>
+          <tr><td lang="zh">亥</td><td>Pig</td><td>Water</td><td>21:00–23:00</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Stems and branches turn together like two gears — ten teeth against twelve. They return
+    to the same pairing every <b>sixty</b> steps, which is why the sexagenary cycle (六十甲子)
+    is sixty long and why a sixtieth birthday is a milestone: your year pillar has come round
+    to where it started.</p>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────── -->
+  <section class="card prose" id="pillars" aria-labelledby="pillars-h">
+    <h2 id="pillars-h" class="card-title">Where each pillar comes from</h2>
+
+    <p>Nothing here is arbitrary. Each pillar is derived by a fixed rule, and if you know the
+    rules you can check any calculator's work — including ours.</p>
+
+    <h3>The year pillar</h3>
+    <p>Runs on the sixty-cycle, one step per year. The catch is <em>when</em> the year turns:
+    not 1 January, and not Chinese New Year, but <b>立春</b> (Lichun, "start of spring"), which
+    falls around 4 February. See the <a href="#terms">next section</a> — this trips up more
+    people than anything else in BaZi.</p>
+
+    <h3>The month pillar</h3>
+    <p>The branch is fixed to the season, always in the same order: 寅 for the month beginning
+    at 立春, then 卯, 辰 and round. The stem is derived from the year stem by a rule called
+    <b>五虎遁</b> ("hiding the five tigers"), which is really just a mnemonic table: a 甲 or 己
+    year always starts its first month with 丙, a 乙 or 庚 year with 戊, and so on.</p>
+
+    <h3>The day pillar</h3>
+    <p>The one part of the chart with nothing to do with the calendar. The sixty-day cycle has
+    simply been counting, without interruption, for over two thousand years. Any date maps to
+    exactly one day pillar — we compute it from the Julian Day Number, which is the same
+    continuous count astronomers use.</p>
+    <p>One convention matters: <b>the day changes at 23:00, not midnight</b>, because 子时
+    (the Rat hour) begins the new day. A birth at 23:30 on Tuesday carries Wednesday's day
+    pillar.</p>
+
+    <h3>The hour pillar</h3>
+    <p>The branch is the two-hour 时辰 your birth falls in (the table above). The stem comes from
+    the <em>day</em> stem by a rule called <b>五鼠遁</b> — a 甲 or 己 day starts its 子 hour with
+    甲, a 乙 or 庚 day with 丙, and so on.</p>
+    <p>If you do not know your birth time, you lose the hour pillar and nothing else. Six of the
+    eight characters, including your Day Master, are still fully determined. A three-pillar
+    reading is a real reading.</p>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────── -->
+  <section class="card prose" id="terms" aria-labelledby="terms-h">
+    <h2 id="terms-h" class="card-title">Why your year may not be the year you think</h2>
+
+    <p>BaZi runs on the <b>solar</b> calendar, not the lunar one. The twelve months of a BaZi
+    chart are marked by twelve solar terms called <b>节</b> (jié) — the moments the sun reaches
+    particular points on its yearly path. They are astronomy, not tradition:</p>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <caption>The twelve 节 that define the months. Dates shift by a day either way; the exact
+        instant is what counts.</caption>
+        <thead><tr><th>Term</th><th>Meaning</th><th>Around</th><th>Starts the month of</th></tr></thead>
+        <tbody>
+          <tr><td lang="zh">立春</td><td>Start of spring</td><td>4 Feb</td><td lang="zh">寅 Tiger</td></tr>
+          <tr><td lang="zh">惊蛰</td><td>Awakening insects</td><td>5 Mar</td><td lang="zh">卯 Rabbit</td></tr>
+          <tr><td lang="zh">清明</td><td>Clear and bright</td><td>4 Apr</td><td lang="zh">辰 Dragon</td></tr>
+          <tr><td lang="zh">立夏</td><td>Start of summer</td><td>5 May</td><td lang="zh">巳 Snake</td></tr>
+          <tr><td lang="zh">芒种</td><td>Grain in ear</td><td>5 Jun</td><td lang="zh">午 Horse</td></tr>
+          <tr><td lang="zh">小暑</td><td>Minor heat</td><td>7 Jul</td><td lang="zh">未 Goat</td></tr>
+          <tr><td lang="zh">立秋</td><td>Start of autumn</td><td>7 Aug</td><td lang="zh">申 Monkey</td></tr>
+          <tr><td lang="zh">白露</td><td>White dew</td><td>7 Sep</td><td lang="zh">酉 Rooster</td></tr>
+          <tr><td lang="zh">寒露</td><td>Cold dew</td><td>8 Oct</td><td lang="zh">戌 Dog</td></tr>
+          <tr><td lang="zh">立冬</td><td>Start of winter</td><td>7 Nov</td><td lang="zh">亥 Pig</td></tr>
+          <tr><td lang="zh">大雪</td><td>Major snow</td><td>7 Dec</td><td lang="zh">子 Rat</td></tr>
+          <tr><td lang="zh">小寒</td><td>Minor cold</td><td>5 Jan</td><td lang="zh">丑 Ox</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="callout"><b>The practical consequence.</b> If you were born in January or the first
+    days of February, your BaZi year is the <em>previous</em> calendar year. Someone born on
+    20 January 2025 is not a Snake — 立春 had not arrived, so they belong to the Dragon year
+    2024, and their chart says so.</p>
+
+    <p>And a solar term is an <b>instant</b>, not a day. In 2025, 立春 fell at 22:09 on
+    3 February. Someone born at breakfast that morning belongs to the old year; someone born
+    before midnight belongs to the new one. Both were born on 3 February.</p>
+
+    <p>This is why the calculator asks for your birthplace even though you may not want a
+    longitude correction: a term happens at one moment worldwide, so working out which side of
+    it you were born on requires knowing your time zone. Without it, a birth within about
+    fifteen hours of a term genuinely cannot be placed, and the calculator shows you both
+    readings rather than guessing.</p>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────── -->
+  <section class="card prose" id="solar-time" aria-labelledby="st-h">
+    <h2 id="st-h" class="card-title">True solar time 真太陽時</h2>
+
+    <p>The hour pillar is meant to describe where the sun actually was, not what a clock on the
+    wall said. Clocks run on time zones, which are a political convenience — everyone in a zone
+    keeps the same time even though the sun reaches them at different moments.</p>
+
+    <p>Two corrections turn clock time into sun time:</p>
+
+    <ul>
+      <li><b>Longitude.</b> The sun crosses your meridian four minutes earlier for every degree
+      you sit east of your zone's centre line. Singapore keeps UTC+8, whose centre line is 120°E,
+      but sits at 103.8°E — so its clocks run about 65 minutes ahead of its sun.</li>
+      <li><b>The equation of time.</b> Earth's orbit is elliptical and its axis is tilted, so
+      even a perfect sundial runs up to 16 minutes fast or slow depending on the season.</li>
+    </ul>
+
+    <p class="callout"><b>Where this bites hardest.</b> China keeps one time zone across a country
+    five zones wide. A birth in Ürümqi reads more than two hours off its own sun. Anyone born in
+    western China, or in a country with a wide single zone, should expect a real shift — often a
+    whole 时辰.</p>
+
+    <p>Daylight saving is the other trap, and no calculator can detect it for you: it is a
+    whole-hour error, exactly half a 时辰, so it changes the hour pillar about half the time.
+    If you were born in summer somewhere that observed it, tick the box. Mainland China observed
+    daylight saving from 1986 to 1991.</p>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────── -->
+  <section class="card prose" id="day-master" aria-labelledby="dmh">
+    <h2 id="dmh" class="card-title">Your Day Master 日主</h2>
+
+    <p>Of the eight characters, one is you: the <b>stem of the day pillar</b>. It is called the
+    Day Master, or 日元, and it is the single most important character in the chart.</p>
+
+    <p>Everything else is then read <em>in relation to it</em>. The same character means one
+    thing in a 甲 Wood person's chart and something else entirely in a 庚 Metal person's, because
+    its relationship to the Day Master has changed. This is the idea that makes BaZi different
+    from sun-sign astrology: there are not twelve kinds of people, there is one kind of person
+    per chart and seven other characters describing their world.</p>
+
+    <p class="callout"><b>How to use it.</b> Read your Day Master's image literally and it will
+    take you further than you expect. 甲 is the tall tree: it grows in one direction, it does not
+    bend easily, it needs room. 乙 is the vine: same element, opposite strategy — it goes around
+    obstacles and climbs on what is already there. Both are Wood. Neither is better.</p>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────── -->
+  <section class="card prose" id="elements" aria-labelledby="eh">
+    <h2 id="eh" class="card-title">The five elements 五行</h2>
+
+    <p>Wood, Fire, Earth, Metal and Water. What matters is not the list but the two cycles
+    running through it:</p>
+
+    <ul>
+      <li><b>Generating</b> (生): Wood feeds Fire, Fire makes Earth (ash), Earth yields Metal,
+      Metal carries Water (condensation), Water grows Wood. Each element is the parent of the
+      next.</li>
+      <li><b>Controlling</b> (克): Wood breaks up Earth, Earth dams Water, Water puts out Fire,
+      Fire melts Metal, Metal cuts Wood. Each element restrains the one two places along.</li>
+    </ul>
+
+    <p>Together they make a star inside a circle, and every relationship in a BaZi chart is one
+    of five: <em>same as me, what I generate, what I control, what controls me, what generates
+    me</em>. Those five relationships are the Ten Gods, below.</p>
+
+    <p>The elements panel counts how much of each your chart carries. A chart is not "good"
+    for being balanced — a lopsided chart is simply concentrated, and concentration has its own
+    uses. What matters more is whether your Day Master has <b>support</b>: enough of its own
+    element, and enough of the element that feeds it.</p>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────── -->
+  <section class="card prose" id="hidden-stems" aria-labelledby="hsh">
+    <h2 id="hsh" class="card-title">Hidden stems 藏干, and why two counts differ</h2>
+
+    <p>Every branch conceals one to three stems inside it. 子 hides only 癸. 丑 hides 己, 癸
+    and 辛. These <b>hidden stems</b> are why a chart with no visible Metal can still behave
+    like a chart with Metal in it.</p>
+
+    <p>They are not equal. The first is the <b>main qi</b> (本气) and dominates; a second is the
+    <b>middle qi</b> (中气); a third is the <b>residual qi</b> (余气) and is faint. A common
+    teaching weights them roughly 6 : 3 : 1.</p>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <caption>Hidden stems, strongest first</caption>
+        <thead><tr><th>Branch</th><th>本气 main</th><th>中气 middle</th><th>余气 residual</th></tr></thead>
+        <tbody>
+          <tr><td lang="zh">子</td><td lang="zh">癸</td><td>—</td><td>—</td></tr>
+          <tr><td lang="zh">丑</td><td lang="zh">己</td><td lang="zh">癸</td><td lang="zh">辛</td></tr>
+          <tr><td lang="zh">寅</td><td lang="zh">甲</td><td lang="zh">丙</td><td lang="zh">戊</td></tr>
+          <tr><td lang="zh">卯</td><td lang="zh">乙</td><td>—</td><td>—</td></tr>
+          <tr><td lang="zh">辰</td><td lang="zh">戊</td><td lang="zh">乙</td><td lang="zh">癸</td></tr>
+          <tr><td lang="zh">巳</td><td lang="zh">丙</td><td lang="zh">庚</td><td lang="zh">戊</td></tr>
+          <tr><td lang="zh">午</td><td lang="zh">丁</td><td lang="zh">己</td><td>—</td></tr>
+          <tr><td lang="zh">未</td><td lang="zh">己</td><td lang="zh">丁</td><td lang="zh">乙</td></tr>
+          <tr><td lang="zh">申</td><td lang="zh">庚</td><td lang="zh">壬</td><td lang="zh">戊</td></tr>
+          <tr><td lang="zh">酉</td><td lang="zh">辛</td><td>—</td><td>—</td></tr>
+          <tr><td lang="zh">戌</td><td lang="zh">戊</td><td lang="zh">辛</td><td lang="zh">丁</td></tr>
+          <tr><td lang="zh">亥</td><td lang="zh">壬</td><td lang="zh">甲</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="callout"><b>Why the calculator offers two counts.</b> <b>Face value</b> counts each
+    of the eight characters once and ignores what the branches hide — quick, and the number most
+    calculators show. <b>Hidden stems weighted</b> splits each branch's single unit across the
+    stems inside it, so a 丑 does not outweigh a 子 merely by concealing more names. The Ten Gods
+    panel uses the weighted count, so if you want the two panels to agree, use the weighted one.</p>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────── -->
+  <section class="card prose" id="ten-gods" aria-labelledby="tgh">
+    <h2 id="tgh" class="card-title">The Ten Gods 十神</h2>
+
+    <p>"Gods" is a translation artefact — nothing supernatural is meant. A Ten God is just a
+    label for how one character relates to your Day Master. Five relationships, each in two
+    flavours depending on whether the polarities match, gives ten.</p>
+
+    <p>Matching polarity (yang meeting yang) is direct and frictionless; opposite polarity
+    (yang meeting yin) attracts and binds. That is why the "direct" and "indirect" labels fall
+    where they do, which looks inconsistent until you see the logic.</p>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <caption>The Ten Gods, grouped by relationship to the Day Master</caption>
+        <thead><tr><th>Family</th><th>Relationship</th><th>Same polarity</th><th>Opposite polarity</th></tr></thead>
+        <tbody>
+          <tr><td>Peers <span lang="zh">比劫</span></td><td>Same element as me</td>
+              <td lang="zh">比肩 Friend</td><td lang="zh">劫财 Rob Wealth</td></tr>
+          <tr><td>Output <span lang="zh">食伤</span></td><td>What I generate</td>
+              <td lang="zh">食神 Eating God</td><td lang="zh">伤官 Hurting Officer</td></tr>
+          <tr><td>Wealth <span lang="zh">财</span></td><td>What I control</td>
+              <td lang="zh">偏财 Indirect Wealth</td><td lang="zh">正财 Direct Wealth</td></tr>
+          <tr><td>Authority <span lang="zh">官杀</span></td><td>What controls me</td>
+              <td lang="zh">七杀 Seven Killings</td><td lang="zh">正官 Direct Officer</td></tr>
+          <tr><td>Resource <span lang="zh">印</span></td><td>What generates me</td>
+              <td lang="zh">偏印 Indirect Resource</td><td lang="zh">正印 Direct Resource</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The names are old and dramatic. <b>Seven Killings</b> (七杀) sounds alarming and is not:
+    it means pressure that comes at you without a formal relationship softening it — a deadline,
+    a rival, a crisis. People with a lot of it often do their best work under exactly those
+    conditions. <b>Hurting Officer</b> (伤官) means expressive talent that will not sit inside
+    rules; it "hurts" the Officer, which is the rules.</p>
+
+    <p class="callout"><b>How to read your distribution.</b> Look for what is <em>missing</em>
+    as much as what is abundant. A chart heavy in Output and light in Authority describes someone
+    who generates a great deal and resists structure — useful to know before you take a job that
+    is mostly structure. None of the ten are good or bad; they describe what you have a lot of
+    and what you will have to build deliberately.</p>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────── -->
+  <section class="card prose" id="apply" aria-labelledby="ah">
+    <h2 id="ah" class="card-title">Putting it to use</h2>
+
+    <p>Read the chart in this order. It is how a practitioner works, and it stops you drowning
+    in detail.</p>
+
+    <ol class="steps">
+      <li><b>Find yourself.</b> Your Day Master, and its element and polarity. Read its image.
+      That is the protagonist.</li>
+      <li><b>Check your footing.</b> Is your Day Master supported? Look at the support figure the
+      calculator gives — your own element plus the one that feeds it. Roughly half or more, and
+      you are well rooted; much less, and the chart leans on outside support.</li>
+      <li><b>Find the loudest relationship.</b> Whichever of the five families is largest is the
+      theme you keep returning to — output, wealth, authority, resource or peers.</li>
+      <li><b>Find the quietest.</b> The smallest family, especially an empty one, is the thing
+      you have to construct on purpose rather than inherit.</li>
+      <li><b>Read the pair.</b> The interesting sentence is almost always "a lot of X, very little
+      Y". That is the shape of a life, not a verdict on it.</li>
+    </ol>
+
+    <p class="callout"><b>A caution worth stating plainly.</b> A chart describes tendencies and
+    the terrain you are working with. It does not predict events, and no arrangement of eight
+    characters obliges you to do anything. Treat a reading the way you would treat a
+    well-observed description of your temperament: useful when it lands, discardable when it
+    does not.</p>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────── -->
+  <section class="card prose" id="limits" aria-labelledby="lh">
+    <h2 id="lh" class="card-title">What this calculator does not do</h2>
+
+    <p>Stated so you know where the edges are, and so you can tell when you need an almanac or a
+    practitioner instead.</p>
+
+    <ul>
+      <li><b>Luck pillars</b> (大运) — the ten-year periods that step forward or back from your
+      month pillar. Practitioners spend most of a reading on these. They need your sex as well as
+      your birth data, which this calculator does not ask for.</li>
+      <li><b>Branch interactions</b> — the combinations and clashes (六合, 三合, 六冲, 刑, 害)
+      that let branches transform or cancel each other. These can change what an element tally
+      means.</li>
+      <li><b>A strength verdict</b> (旺衰). We give a transparent support ratio. A real assessment
+      weighs the <em>season</em> heavily — an element born in its own season is strong almost
+      regardless of how many times it appears — and this calculator does not model that.</li>
+      <li><b>The useful god</b> (用神) — the element your chart most needs. That is the practical
+      output of a professional reading and it depends on everything above.</li>
+    </ul>
+
+    <p>What it does do, it does exactly: the eight characters, computed from the sun's real
+    position, with every convention stated. That is the part worth getting right, because
+    everything else is built on top of it.</p>
+
+    <p class="note"><a href="index.html">← Cast your chart</a></p>
+  </section>
+
+</main>
+
+<footer class="site-foot wrap">
+  <p>
+    Solar terms are solved from the sun's apparent geocentric longitude and shifted from
+    Terrestrial Time to UT, giving term instants accurate to about five minutes over 1901–2100.
+    Nothing here is generated by AI.
+  </p>
+  <p class="disclaimer">For insight and entertainment. Not medical, legal, or financial advice.</p>
+</footer>
+
+</body>
+</html>

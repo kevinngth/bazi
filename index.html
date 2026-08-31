@@ -19,52 +19,66 @@
 
 <header class="site-head">
   <div class="wrap head-inner">
-    <span class="seal" aria-hidden="true">命</span>
-    <div>
-      <h1>The Four Pillars <span class="hz" lang="zh">八字</span></h1>
-      <p class="tagline">A free BaZi calculator. Classical calculation, explained in plain English.</p>
+    <div class="head-main">
+      <span class="seal" aria-hidden="true">命</span>
+      <div>
+        <h1>The Four Pillars <span class="hz" lang="zh">八字</span></h1>
+        <p class="tagline">A free BaZi calculator. Classical calculation, explained in plain English.</p>
+      </div>
     </div>
+    <a class="head-link" href="guide.html">How it works →</a>
   </div>
 </header>
 
 <main class="wrap">
 
   <!-- ── Input ─────────────────────────────────────────────── -->
-  <section class="card form-card" aria-labelledby="form-h">
+  <section class="card form-card" id="form-card" aria-labelledby="form-h">
     <h2 id="form-h" class="card-title">Your birth details</h2>
 
+    <div class="recap" id="recap" hidden>
+      <span class="recap-line" id="recap-line"></span>
+      <button type="button" class="btn-ghost btn-edit" id="btn-edit">Edit</button>
+    </div>
+
     <form id="bazi-form" novalidate>
-      <div class="field">
-        <label for="in-date">Date of birth <span class="req">· required</span></label>
-        <input type="date" id="in-date" min="1901-01-01" max="2100-12-31" required>
-        <p class="hint">Gregorian (公历) calendar, the everyday one.</p>
-      </div>
+      <div id="form-details">
+        <div class="field">
+          <label for="in-date">Date of birth <span class="req">· required</span></label>
+          <input type="date" id="in-date" min="1901-01-01" max="2100-12-31" required>
+          <p class="hint">Gregorian (公历) calendar, the everyday one.</p>
+        </div>
 
-      <div class="field">
-        <label for="in-time">Time of birth</label>
-        <input type="time" id="in-time">
-        <label class="check">
-          <input type="checkbox" id="in-time-unknown">
-          <span>I don't know my birth time</span>
-        </label>
-        <p class="hint">Without it we cast three pillars instead of four. That still gives a full
-          reading of the other six characters.</p>
-      </div>
+        <div class="field">
+          <label for="in-time">Time of birth</label>
+          <input type="time" id="in-time">
+          <label class="check">
+            <input type="checkbox" id="in-time-unknown">
+            <span>I don't know my birth time</span>
+          </label>
+          <p class="hint">Without it we cast three pillars instead of four. That still gives a full
+            reading of the other six characters.</p>
+        </div>
 
-      <div class="field">
-        <label for="in-place">Birthplace</label>
-        <input type="text" id="in-place" autocomplete="off" aria-describedby="place-hint"
-               placeholder="Start typing a city, e.g. Singapore">
-        <div id="city-results" class="city-results" aria-label="Matching cities"></div>
-        <p class="hint" id="place-hint">Optional. Picking your city enables true solar time
-          (真太陽時) correction.</p>
-        <label class="check" id="dst-wrap" hidden>
-          <input type="checkbox" id="in-dst">
-          <span>Daylight saving time was in effect (+1 hour)</span>
-        </label>
-      </div>
+        <div class="field">
+          <label for="in-place">Birthplace</label>
+          <input type="text" id="in-place" autocomplete="off" aria-describedby="place-hint"
+                 role="combobox" aria-expanded="false" aria-controls="city-results"
+                 aria-autocomplete="list"
+                 placeholder="Start typing a city, e.g. Singapore">
+          <div id="city-results" class="city-results" role="listbox" aria-label="Matching cities"></div>
+          <p class="visually-hidden" id="city-count" role="status" aria-live="polite"></p>
+          <p class="hint" id="place-hint">Optional, but it makes the chart exact. Your city gives us
+            the longitude for true solar time (真太陽時) and the time zone that places your birth
+            against the solar terms.</p>
+          <label class="check" id="dst-wrap" hidden>
+            <input type="checkbox" id="in-dst">
+            <span>Daylight saving time was in effect (+1 hour)</span>
+          </label>
+        </div>
 
-      <button type="submit" class="btn-primary">Cast my chart</button>
+        <button type="submit" class="btn-primary">Cast my chart</button>
+      </div>
       <p class="err" id="form-err" role="alert" hidden></p>
     </form>
   </section>
@@ -78,19 +92,24 @@
       <p class="eyebrow">Your Day Master 日主, the character that represents you</p>
       <h2 id="dm-h" class="dm-line"><span id="dm-char" lang="zh"></span> <span id="dm-name"></span></h2>
       <p class="dm-desc" id="dm-desc"></p>
+      <p class="note"><a href="guide.html#day-master">What a Day Master is →</a></p>
     </section>
 
     <section class="card" aria-labelledby="pillars-h">
       <h2 id="pillars-h" class="card-title">Four Pillars 四柱</h2>
       <div class="pillars" id="pillars"></div>
       <p class="note" id="solar-note"></p>
-      <p class="note warn" id="boundary-note" hidden></p>
+      <div class="boundary" id="boundary-note" role="note" hidden></div>
     </section>
 
     <section class="card" aria-labelledby="elem-h">
       <h2 id="elem-h" class="card-title">Five Elements 五行</h2>
-      <p class="card-sub">How much of each element your eight characters carry. This is the raw
-        balance of your chart.</p>
+      <p class="card-sub">How much of each element your eight characters carry. Two ways of counting
+        the same chart — see <a href="guide.html#hidden-stems">hidden stems</a> for why they differ.</p>
+      <div class="elem-basis" role="group" aria-label="How to count the elements">
+        <button type="button" class="basis-btn" id="basis-weighted" aria-pressed="true">Hidden stems weighted</button>
+        <button type="button" class="basis-btn" id="basis-face" aria-pressed="false">Face value</button>
+      </div>
       <div id="elements"></div>
       <p class="note" id="support-note"></p>
     </section>
@@ -101,8 +120,10 @@
         Every other character in your chart, labelled by its <em>relationship</em> to you, rather
         like a family tree drawn around one person. There are five relationships, each in a milder
         and a more intense flavour. None of them are good or bad.
+        <a href="guide.html#ten-gods">Read the full explanation →</a>
       </p>
       <div id="gods"></div>
+      <p class="gods-toggle"><button type="button" class="btn-ghost" id="btn-gods-all" hidden></button></p>
     </section>
 
     <details class="card bench">
@@ -120,8 +141,9 @@
 
 <footer class="site-foot wrap">
   <p>
-    Charts are computed with classical rules: solar terms (节气), the sexagenary cycle, and
-    optional true solar time. Nothing here is generated by AI.
+    Charts are computed with classical rules: solar terms (节气) solved from the sun's apparent
+    longitude, the sexagenary cycle, and optional true solar time. Nothing here is generated by AI.
+    <a href="guide.html">How a chart is cast →</a>
   </p>
   <p class="disclaimer">For insight and entertainment. Not medical, legal, or financial advice.</p>
 </footer>

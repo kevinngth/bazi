@@ -378,6 +378,11 @@
    * Case-insensitive search over "City" and "City, Country".
    * Prefix matches rank above substring matches. Returns up to `limit`
    * entries (default 5). An empty/blank query returns [].
+   *
+   * The whole table is scanned every time. An earlier version stopped once it
+   * had `limit` prefix matches, which meant `search('Newcastle', 1)` could only
+   * ever return the first Newcastle in the array — so a shared link naming an
+   * ambiguous city silently resolved to the wrong hemisphere.
    */
   function search(query, limit) {
     limit = typeof limit === 'number' && limit > 0 ? limit : 5;
@@ -393,10 +398,26 @@
       } else if (name.indexOf(q) !== -1 || full.indexOf(q) !== -1) {
         substr.push(c);
       }
-      if (prefix.length >= limit) break;
     }
     return prefix.concat(substr).slice(0, limit);
   }
 
-  return { cities: CITIES, search };
+  /**
+   * Exact lookup for a "Name" or "Name, Country" pair, used when restoring a
+   * chart from a URL. Returns null rather than guessing: an ambiguous name with
+   * no country resolves only if exactly one city carries it.
+   */
+  function lookup(name, country) {
+    const n = String(name == null ? '' : name).trim().toLowerCase();
+    if (!n) return null;
+    const byName = CITIES.filter(function (c) { return c.name.toLowerCase() === n; });
+    if (!byName.length) return null;
+    if (country) {
+      const k = String(country).trim().toLowerCase();
+      return byName.filter(function (c) { return c.country.toLowerCase() === k; })[0] || null;
+    }
+    return byName.length === 1 ? byName[0] : null;
+  }
+
+  return { cities: CITIES, search, lookup };
 });

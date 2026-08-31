@@ -8,16 +8,20 @@
   --ink:     #26231f;
   --ink-soft:#4a453c;
   --hair:    #e4ddcd;
-  --mute:    #8f8571;
-  --seal:    #ae4326;
-  --gold:    #c6a15b;
+  --mute:    #776d59;
+  --seal:    #ae4326;        /* vermillion as ink: text, borders, rules */
+  --seal-solid: #ae4326;     /* vermillion as ground: always carries cream text */
+  --gold:    #8f7330;
   --track:   #ece5d4;
+  --field:   #948870;   /* control edges need 3:1 against the field, not a hairline */
 
-  --wood:  #6b7f5a;
-  --fire:  #ae4326;
-  --earth: #b08d57;
-  --metal: #9a9a94;
-  --water: #5a7a8c;
+  /* Element fills, each clearing 3:1 against --track so the bars carry meaning
+     rather than decoration. */
+  --wood:  #546a43;
+  --fire:  #a8391d;
+  --earth: #8a6a2e;
+  --metal: #6f7076;
+  --water: #41647a;
 
   --serif: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Songti SC', 'Noto Serif SC', serif;
   --sans: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
@@ -30,8 +34,22 @@
     --ink:     #ece5d8;
     --ink-soft:#c3bbab;
     --hair:    #3a352d;
-    --mute:    #938a77;
+    --mute:    #9c937f;
     --track:   #2e2a23;
+    --field:   #7a7160;
+    /* Vermillion and gold tuned for rice paper are unreadable on ink. These
+       are the same hues lifted until they clear 5:1 on --surface. --seal in
+       particular carries .err and .note.warn, so it must be the most legible
+       colour on the page, not the least. */
+    --seal:    #e2795f;
+    --seal-solid: #a63f23;   /* the stamp stays deep; its glyph stays cream */
+    --gold:    #d9b877;
+
+    --wood:  #9dbb8a;
+    --fire:  #e2795f;
+    --earth: #d0a663;
+    --metal: #b9bcc0;
+    --water: #7fa8c0;
   }
 }
 
@@ -40,6 +58,9 @@
 /* Author `display` rules below (e.g. .check) would otherwise beat the UA
    stylesheet's [hidden] { display: none }, so restate it with force. */
 [hidden] { display: none !important; }
+
+a { color: var(--seal); }
+a:hover { color: var(--ink); }
 
 body {
   margin: 0;
@@ -65,7 +86,7 @@ body {
   flex: none;
   width: 46px; height: 46px;
   border-radius: 3px;
-  background: var(--seal);
+  background: var(--seal-solid);
   color: #f8f3e9;
   font-family: 'Songti SC', 'Noto Serif SC', serif;
   font-size: 24px;
@@ -79,7 +100,7 @@ body {
   letter-spacing: .02em;
   margin: 0;
 }
-.site-head h1 .hz { color: var(--seal); }
+.site-head h1 .hz { color: var(--seal); white-space: nowrap; }
 .tagline {
   margin: 3px 0 0;
   font-size: 12.5px;
@@ -127,10 +148,10 @@ input[type=date], input[type=time], input[type=text] {
   font-size: 16px; /* 16px avoids iOS zoom-on-focus */
   color: var(--ink);
   background: var(--paper);
-  border: 1px solid var(--hair);
+  border: 1px solid var(--field);
   border-radius: 3px;
 }
-input:focus { outline: none; border-color: var(--ink-soft); }
+input:focus { border-color: var(--ink-soft); }
 
 .hint { margin: 7px 0 0; font-size: 12px; color: var(--mute); line-height: 1.5; }
 
@@ -156,7 +177,11 @@ input:focus { outline: none; border-color: var(--ink-soft); }
   border-radius: 3px;
   cursor: pointer;
 }
-.city-btn:hover, .city-btn:focus { border-color: var(--seal); color: var(--ink); outline: none; }
+.city-btn:hover, .city-btn:focus, .city-btn[aria-selected="true"] {
+  border-color: var(--seal);
+  color: var(--ink);
+}
+.city-btn[aria-selected="true"] { background: var(--track); }
 .city-btn .lon { color: var(--mute); font-size: 12px; }
 
 .btn-primary {
@@ -166,12 +191,12 @@ input:focus { outline: none; border-color: var(--ink-soft); }
   font-size: 15px;
   letter-spacing: .03em;
   color: #f8f3e9;
-  background: var(--seal);
-  border: 1px solid var(--seal);
+  background: var(--seal-solid);
+  border: 1px solid var(--seal-solid);
   border-radius: 3px;
   cursor: pointer;
 }
-.btn-primary:hover { background: #96371f; border-color: #96371f; }
+.btn-primary:hover { background: #8e3620; border-color: #8e3620; }
 
 .btn-ghost {
   padding: 10px 16px;
@@ -257,7 +282,8 @@ input:focus { outline: none; border-color: var(--ink-soft); }
 .gf-bar { height: 5px; background: var(--track); border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
 .gf-fill { display: block; height: 100%; background: var(--gold); border-radius: 3px; }
 .god { display: flex; gap: 10px; padding: 7px 0; border-top: 1px solid var(--hair); font-size: 13px; }
-.god.zero { opacity: .45; }
+.god.zero .god-count { border-style: dashed; color: var(--mute); }
+.god.zero .god-name { color: var(--ink-soft); }
 .god-count {
   flex: none; width: 22px; height: 22px;
   display: flex; align-items: center; justify-content: center;
@@ -267,7 +293,11 @@ input:focus { outline: none; border-color: var(--ink-soft); }
 }
 .god-body { flex: 1; }
 .god-name { color: var(--ink); }
-.god-name .hz { font-family: 'Songti SC', 'Noto Serif SC', var(--serif); color: var(--ink-soft); }
+.god-name .hz {
+  font-family: 'Songti SC', 'Noto Serif SC', var(--serif);
+  color: var(--mute);
+  margin-left: 5px;
+}
 .god-gloss { display: block; font-size: 12px; color: var(--mute); line-height: 1.5; }
 
 /* ── Bench notes ────────────────────────────────────────── */
@@ -277,7 +307,7 @@ input:focus { outline: none; border-color: var(--ink-soft); }
   cursor: pointer;
   color: var(--ink-soft);
 }
-.bench summary:focus { outline: none; color: var(--ink); }
+.bench summary:focus { color: var(--ink); }
 .bench dl { margin: 16px 0 0; font-size: 13px; }
 .bench dt { color: var(--mute); font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase; margin-top: 12px; }
 .bench dd { margin: 3px 0 0; color: var(--ink-soft); }
@@ -328,4 +358,216 @@ input:focus { outline: none; border-color: var(--ink-soft); }
   .bench[open] summary { margin-bottom: 8px; }
   .god-family { break-inside: avoid; }
   a[href]::after { content: ''; }
+}
+
+
+/* ── Solar-term boundary: both readings, side by side ────── */
+/* Fires when the birth sits too close to a 节 to place with confidence — the
+   page owes the reader the fork, not a coin flip presented as an answer. */
+.boundary {
+  border: 1px solid var(--seal);
+  border-radius: 3px;
+  padding: 18px 18px 16px;
+  margin-top: 16px;
+  background: var(--paper);
+}
+.boundary h3 {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0 0 6px;
+  color: var(--seal);
+}
+.boundary p { margin: 0 0 12px; font-size: 13px; color: var(--ink-soft); line-height: 1.55; }
+.boundary p:last-child { margin-bottom: 0; }
+.forks { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.fork {
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  padding: 11px 12px;
+  background: var(--surface);
+}
+.fork.is-shown { border-color: var(--seal); }
+.fork-when {
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: 6px;
+}
+.fork.is-shown .fork-when { color: var(--seal); }
+.fork-pillars {
+  font-family: 'Songti SC', 'Noto Serif SC', var(--serif);
+  font-size: 19px;
+  letter-spacing: .06em;
+  line-height: 1.4;
+}
+.fork-note { font-size: 11.5px; color: var(--mute); margin-top: 5px; line-height: 1.45; }
+
+/* ── Collapsed birth details, once a chart is cast ───────── */
+.recap {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.recap-line { font-size: 14px; color: var(--ink-soft); }
+.recap-line b { font-weight: 500; color: var(--ink); }
+
+/* ── Ten gods: hide the empty ones until asked ───────────── */
+.gods-toggle { margin-top: 4px; }
+#gods:not(.show-all) .god.zero { display: none; }
+/* Families whose gods are all zero are marked by renderGods rather than with
+   :has(), so the rule works the same everywhere. */
+#gods:not(.show-all) .god-family.all-zero { display: none; }
+
+/* ── Element bars: two bases, labelled ───────────────────── */
+.elem-basis {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin: 0 0 14px;
+}
+.basis-btn {
+  padding: 5px 11px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.basis-btn[aria-pressed="true"] {
+  border-color: var(--seal);
+  color: var(--seal);
+  background: var(--paper);
+}
+
+/* ── Header link to the guide ────────────────────────────── */
+.head-inner { justify-content: space-between; }
+.head-main { display: flex; align-items: center; gap: 16px; }
+.head-link {
+  flex: none;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-bottom: 1px solid var(--field);
+  padding-bottom: 1px;
+  white-space: nowrap;
+}
+.head-link:hover { color: var(--seal); border-color: var(--seal); }
+
+@media (max-width: 560px) {
+  .head-inner { flex-wrap: wrap; gap: 10px; }
+  /* Beside a heading that has wrapped, a vertically-centred seal drifts down
+     next to the second line. Pin it to the first. */
+  .head-main { align-items: flex-start; }
+  .seal { margin-top: 2px; }
+  .site-head h1 { font-size: 22px; }
+}
+@media (max-width: 360px) {
+  .site-head h1 { font-size: 20px; }
+  .seal { width: 38px; height: 38px; font-size: 20px; }
+}
+
+/* Pillar cards get about 43px of usable width at 320px, which is not enough
+   for four stacked tiers. Below 380px the grid folds to 2×2 and the hidden
+   stems move to a single full-width row beneath. */
+@media (max-width: 379px) {
+  .pillars { grid-template-columns: repeat(2, 1fr); }
+  .forks { grid-template-columns: 1fr; }
+}
+
+@media print {
+  .head-link, .gods-toggle, .elem-basis, .btn-edit { display: none !important; }
+  #gods .god.zero { display: flex !important; }
+  .boundary { break-inside: avoid; }
+}
+
+/* ── Guide page ──────────────────────────────────────────── */
+.prose p, .prose ul, .prose ol { font-size: 15px; color: var(--ink-soft); line-height: 1.68; }
+.prose > p:first-of-type { margin-top: 14px; }
+.prose p { margin: 0 0 14px; max-width: 62ch; }
+.prose ul, .prose ol { margin: 0 0 14px; padding-left: 22px; max-width: 62ch; }
+.prose li { margin-bottom: 8px; }
+.prose li:last-child { margin-bottom: 0; }
+.prose b { font-weight: 600; color: var(--ink); }
+.prose h3 {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 26px 0 8px;
+}
+
+/* A pull-out for the sentence a reader should leave with. */
+.callout {
+  border-left: 3px solid var(--gold);
+  background: var(--paper);
+  padding: 13px 16px;
+  margin: 0 0 16px !important;
+  border-radius: 0 3px 3px 0;
+}
+
+.steps { counter-reset: step; list-style: none; padding-left: 0; }
+.steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.steps li::before {
+  content: counter(step);
+  font-family: var(--serif);
+  font-size: 15px;
+  color: var(--seal);
+  text-align: right;
+}
+
+/* Reference tables scroll on their own rather than pushing the page sideways. */
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  margin: 0 0 18px;
+}
+table.ref { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 400px; }
+table.ref th, table.ref td {
+  text-align: left;
+  padding: 8px 13px;
+  border-bottom: 1px solid var(--hair);
+  color: var(--ink-soft);
+  vertical-align: top;
+}
+table.ref thead th {
+  font-size: 10.5px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--mute);
+  font-weight: 500;
+  background: var(--paper);
+  white-space: nowrap;
+}
+table.ref tbody tr:last-child td { border-bottom: 0; }
+table.ref td[lang="zh"], table.ref td span[lang="zh"] {
+  font-family: 'Songti SC', 'Noto Serif SC', var(--serif);
+  color: var(--ink);
+}
+table.ref caption {
+  caption-side: bottom;
+  text-align: left;
+  padding: 9px 13px;
+  font-size: 12px;
+  color: var(--mute);
+  line-height: 1.5;
+  border-top: 1px solid var(--hair);
+  background: var(--paper);
+}
+
+.toc-list { margin: 12px 0 0; padding-left: 20px; font-size: 14px; }
+.toc-list li { margin-bottom: 5px; }
+.toc-list a { color: var(--ink-soft); }
+.toc-list a:hover { color: var(--seal); }
+
+@media print {
+  .toc { display: none !important; }
+  .prose { break-inside: auto; }
 }
