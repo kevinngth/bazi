@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BaZi Calculator: Four Pillars of Destiny Chart (八字命理)</title>
+<meta name="description" content="Free BaZi calculator. Enter your birth date, time and city to cast your Four Pillars (八字) chart: day master, five elements and ten gods, with true solar time correction and plain-English explanations.">
+<link rel="canonical" href="https://example.github.io/bazi-calculator/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="BaZi Calculator: Four Pillars of Destiny (八字)">
+<meta property="og:description" content="Cast your Four Pillars chart in seconds. Classical calculation with true solar time correction, explained in plain English.">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='3' fill='%23ae4326'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='%23f8f3e9' font-family='serif'>命</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <span class="seal" aria-hidden="true">命</span>
+    <div>
+      <h1>The Four Pillars <span class="hz" lang="zh">八字</span></h1>
+      <p class="tagline">A free BaZi calculator. Classical calculation, explained in plain English.</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ── Input ─────────────────────────────────────────────── -->
+  <section class="card form-card" aria-labelledby="form-h">
+    <h2 id="form-h" class="card-title">Your birth details</h2>
+
+    <form id="bazi-form" novalidate>
+      <div class="field">
+        <label for="in-date">Date of birth <span class="req">· required</span></label>
+        <input type="date" id="in-date" min="1901-01-01" max="2100-12-31" required>
+        <p class="hint">Gregorian (公历) calendar, the everyday one.</p>
+      </div>
+
+      <div class="field">
+        <label for="in-time">Time of birth</label>
+        <input type="time" id="in-time">
+        <label class="check">
+          <input type="checkbox" id="in-time-unknown">
+          <span>I don't know my birth time</span>
+        </label>
+        <p class="hint">Without it we cast three pillars instead of four. That still gives a full
+          reading of the other six characters.</p>
+      </div>
+
+      <div class="field">
+        <label for="in-place">Birthplace</label>
+        <input type="text" id="in-place" autocomplete="off" aria-describedby="place-hint"
+               placeholder="Start typing a city, e.g. Singapore">
+        <div id="city-results" class="city-results" aria-label="Matching cities"></div>
+        <p class="hint" id="place-hint">Optional. Picking your city enables true solar time
+          (真太陽時) correction.</p>
+        <label class="check" id="dst-wrap" hidden>
+          <input type="checkbox" id="in-dst">
+          <span>Daylight saving time was in effect (+1 hour)</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-primary">Cast my chart</button>
+      <p class="err" id="form-err" role="alert" hidden></p>
+    </form>
+  </section>
+
+  <p class="visually-hidden" id="sr-status" role="status" aria-live="polite"></p>
+
+  <!-- ── Results ───────────────────────────────────────────── -->
+  <div id="results" hidden>
+
+    <section class="card headline-card" aria-labelledby="dm-h">
+      <p class="eyebrow">Your Day Master 日主, the character that represents you</p>
+      <h2 id="dm-h" class="dm-line"><span id="dm-char" lang="zh"></span> <span id="dm-name"></span></h2>
+      <p class="dm-desc" id="dm-desc"></p>
+    </section>
+
+    <section class="card" aria-labelledby="pillars-h">
+      <h2 id="pillars-h" class="card-title">Four Pillars 四柱</h2>
+      <div class="pillars" id="pillars"></div>
+      <p class="note" id="solar-note"></p>
+      <p class="note warn" id="boundary-note" hidden></p>
+    </section>
+
+    <section class="card" aria-labelledby="elem-h">
+      <h2 id="elem-h" class="card-title">Five Elements 五行</h2>
+      <p class="card-sub">How much of each element your eight characters carry. This is the raw
+        balance of your chart.</p>
+      <div id="elements"></div>
+      <p class="note" id="support-note"></p>
+    </section>
+
+    <section class="card" aria-labelledby="gods-h">
+      <h2 id="gods-h" class="card-title">Ten Gods 十神</h2>
+      <p class="card-sub">
+        Every other character in your chart, labelled by its <em>relationship</em> to you, rather
+        like a family tree drawn around one person. There are five relationships, each in a milder
+        and a more intense flavour. None of them are good or bad.
+      </p>
+      <div id="gods"></div>
+    </section>
+
+    <details class="card bench">
+      <summary>Calculation detail 排盘依据</summary>
+      <div id="bench"></div>
+    </details>
+
+    <div class="actions">
+      <button type="button" class="btn-ghost" id="btn-link">Copy link to this chart</button>
+      <button type="button" class="btn-ghost" id="btn-copy">Copy chart as text</button>
+      <button type="button" class="btn-ghost" id="btn-reset">Start over</button>
+    </div>
+  </div>
+</main>
+
+<footer class="site-foot wrap">
+  <p>
+    Charts are computed with classical rules: solar terms (节气), the sexagenary cycle, and
+    optional true solar time. Nothing here is generated by AI.
+  </p>
+  <p class="disclaimer">For insight and entertainment. Not medical, legal, or financial advice.</p>
+</footer>
+
+<script src="bazi.js"></script>
+<script src="cities.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

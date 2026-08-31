@@ -1,0 +1,331 @@
+/* The Four Pillars: BaZi calculator.
+   新中式 (neo-Chinese) for a Western audience: rice-paper neutrals, ink type,
+   vermillion reserved for the seal and single accents. */
+
+:root {
+  --paper:   #f5f1e8;
+  --surface: #fdfbf6;
+  --ink:     #26231f;
+  --ink-soft:#4a453c;
+  --hair:    #e4ddcd;
+  --mute:    #8f8571;
+  --seal:    #ae4326;
+  --gold:    #c6a15b;
+  --track:   #ece5d4;
+
+  --wood:  #6b7f5a;
+  --fire:  #ae4326;
+  --earth: #b08d57;
+  --metal: #9a9a94;
+  --water: #5a7a8c;
+
+  --serif: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Songti SC', 'Noto Serif SC', serif;
+  --sans: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:   #191714;
+    --surface: #211e1a;
+    --ink:     #ece5d8;
+    --ink-soft:#c3bbab;
+    --hair:    #3a352d;
+    --mute:    #938a77;
+    --track:   #2e2a23;
+  }
+}
+
+* { box-sizing: border-box; }
+
+/* Author `display` rules below (e.g. .check) would otherwise beat the UA
+   stylesheet's [hidden] { display: none }, so restate it with force. */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+.wrap { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+
+/* ── Header ─────────────────────────────────────────────── */
+.site-head {
+  background: var(--surface);
+  border-bottom: 1px solid var(--hair);
+  padding: 28px 0 24px;
+  margin-bottom: 28px;
+}
+.head-inner { display: flex; align-items: center; gap: 16px; }
+.seal {
+  flex: none;
+  width: 46px; height: 46px;
+  border-radius: 3px;
+  background: var(--seal);
+  color: #f8f3e9;
+  font-family: 'Songti SC', 'Noto Serif SC', serif;
+  font-size: 24px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 0 0 2px rgba(248,243,233,.25);
+}
+.site-head h1 {
+  font-family: var(--serif);
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: .02em;
+  margin: 0;
+}
+.site-head h1 .hz { color: var(--seal); }
+.tagline {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: var(--mute);
+}
+
+/* ── Cards ──────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  padding: 22px 20px;
+  margin-bottom: 18px;
+}
+.card-title {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 500;
+  margin: 0 0 4px;
+}
+.card-sub {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--mute);
+  line-height: 1.55;
+}
+.card-title + .pillars, .card-title + #elements, .card-title + #gods { margin-top: 16px; }
+
+/* ── Form ───────────────────────────────────────────────── */
+.field { margin-bottom: 22px; }
+.field > label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 7px;
+}
+.req { color: var(--mute); text-transform: none; letter-spacing: 0; font-size: 11.5px; }
+
+input[type=date], input[type=time], input[type=text] {
+  width: 100%;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 16px; /* 16px avoids iOS zoom-on-focus */
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+}
+input:focus { outline: none; border-color: var(--ink-soft); }
+
+.hint { margin: 7px 0 0; font-size: 12px; color: var(--mute); line-height: 1.5; }
+
+.check {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin-top: 10px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.check input { margin: 3px 0 0; flex: none; accent-color: var(--seal); }
+
+.city-results { display: none; margin-top: 8px; }
+.city-results.open { display: flex; flex-direction: column; gap: 6px; }
+.city-btn {
+  text-align: left;
+  padding: 9px 12px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink-soft);
+  background: var(--paper);
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.city-btn:hover, .city-btn:focus { border-color: var(--seal); color: var(--ink); outline: none; }
+.city-btn .lon { color: var(--mute); font-size: 12px; }
+
+.btn-primary {
+  width: 100%;
+  padding: 13px 18px;
+  font: inherit;
+  font-size: 15px;
+  letter-spacing: .03em;
+  color: #f8f3e9;
+  background: var(--seal);
+  border: 1px solid var(--seal);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.btn-primary:hover { background: #96371f; border-color: #96371f; }
+
+.btn-ghost {
+  padding: 10px 16px;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.btn-ghost:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+.err { margin: 12px 0 0; font-size: 13.5px; color: var(--seal); }
+
+/* ── Day-master headline ────────────────────────────────── */
+.headline-card { border-top: 2px solid var(--gold); }
+.eyebrow {
+  margin: 0 0 10px;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.dm-line {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 500;
+  margin: 0 0 10px;
+  line-height: 1.25;
+}
+#dm-char {
+  font-family: 'Songti SC', 'Noto Serif SC', var(--serif);
+  color: var(--seal);
+  font-size: 34px;
+}
+.dm-desc { margin: 0; font-size: 15px; color: var(--ink-soft); }
+
+/* ── Pillars ────────────────────────────────────────────── */
+.pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.pillar {
+  background: var(--paper);
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  padding: 12px 6px;
+  text-align: center;
+}
+.pillar.is-day { border-color: var(--seal); }
+.pillar.is-day .p-label { color: var(--seal); }
+.p-label {
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.p-chars {
+  font-family: 'Songti SC', 'Noto Serif SC', var(--serif);
+  font-size: 30px;
+  line-height: 1.15;
+  margin: 6px 0 4px;
+}
+.p-el { font-size: 10.5px; color: var(--mute); line-height: 1.45; }
+.p-hidden { font-size: 11px; color: var(--mute); margin-top: 6px; border-top: 1px solid var(--hair); padding-top: 6px; }
+.p-hidden b { font-weight: normal; color: var(--ink-soft); }
+
+.note { margin: 14px 0 0; font-size: 12px; color: var(--mute); line-height: 1.55; }
+.note.warn { color: var(--seal); }
+
+/* ── Elements ───────────────────────────────────────────── */
+.elem-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 13px; }
+.elem-name { width: 92px; flex: none; color: var(--ink-soft); }
+.elem-bar { flex: 1; height: 7px; background: var(--track); border-radius: 4px; overflow: hidden; }
+.elem-fill { display: block; height: 100%; border-radius: 4px; }
+.elem-count { width: 20px; text-align: right; color: var(--mute); font-size: 12.5px; }
+
+/* ── Ten gods ───────────────────────────────────────────── */
+.god-family { margin-bottom: 18px; }
+.god-family:last-child { margin-bottom: 0; }
+.gf-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 3px; }
+.gf-name { font-family: var(--serif); font-size: 16px; }
+.gf-pct { font-size: 13px; color: var(--seal); }
+.gf-what { margin: 0 0 9px; font-size: 12.5px; color: var(--mute); line-height: 1.5; }
+.gf-bar { height: 5px; background: var(--track); border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
+.gf-fill { display: block; height: 100%; background: var(--gold); border-radius: 3px; }
+.god { display: flex; gap: 10px; padding: 7px 0; border-top: 1px solid var(--hair); font-size: 13px; }
+.god.zero { opacity: .45; }
+.god-count {
+  flex: none; width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  border: 1px solid var(--hair); border-radius: 3px;
+  color: var(--ink-soft);
+}
+.god-body { flex: 1; }
+.god-name { color: var(--ink); }
+.god-name .hz { font-family: 'Songti SC', 'Noto Serif SC', var(--serif); color: var(--ink-soft); }
+.god-gloss { display: block; font-size: 12px; color: var(--mute); line-height: 1.5; }
+
+/* ── Bench notes ────────────────────────────────────────── */
+.bench summary {
+  font-family: var(--serif);
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.bench summary:focus { outline: none; color: var(--ink); }
+.bench dl { margin: 16px 0 0; font-size: 13px; }
+.bench dt { color: var(--mute); font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase; margin-top: 12px; }
+.bench dd { margin: 3px 0 0; color: var(--ink-soft); }
+.bench dd code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+
+/* ── Misc ───────────────────────────────────────────────── */
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+
+.site-foot { padding: 22px 20px 40px; font-size: 12px; color: var(--mute); line-height: 1.6; }
+.site-foot p { margin: 0 0 6px; }
+.site-foot .disclaimer { font-style: italic; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Visible keyboard focus everywhere, without ringing on mouse clicks. */
+:focus-visible {
+  outline: 2px solid var(--seal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+@media (max-width: 430px) {
+  .p-chars { font-size: 25px; }
+  .pillars { gap: 6px; }
+  .elem-name { width: 74px; }
+  .dm-line { font-size: 22px; }
+  #dm-char { font-size: 29px; }
+}
+
+/* People will want their chart on paper or as a PDF. */
+@media print {
+  :root { --paper: #fff; --surface: #fff; --ink: #000; --ink-soft: #333; --hair: #bbb; --track: #eee; }
+  body { font-size: 11pt; }
+  .site-head { border-bottom: 1px solid var(--hair); margin-bottom: 16px; padding: 0 0 12px; }
+  .form-card, .actions, .site-foot p:not(.disclaimer) { display: none !important; }
+  .card { break-inside: avoid; border: 1px solid var(--hair); margin-bottom: 12px; padding: 14px; }
+  .bench[open] summary { margin-bottom: 8px; }
+  .god-family { break-inside: avoid; }
+  a[href]::after { content: ''; }
+}
