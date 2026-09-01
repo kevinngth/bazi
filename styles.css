@@ -513,20 +513,27 @@ input:focus { border-color: var(--ink-soft); }
   border-radius: 0 3px 3px 0;
 }
 
-.steps { counter-reset: step; list-style: none; padding-left: 0; }
+.prose .steps { counter-reset: step; list-style: none; padding-left: 0; }
+/* Absolute positioning, not grid. A grid item is created per child *and* per
+   text run, so `<b>Find yourself.</b> Your Day Master...` split into two items
+   and the trailing prose dropped into the 26px counter column, one word per
+   line. Taking the counter out of flow leaves the content as ordinary text. */
 .steps li {
   counter-increment: step;
-  display: grid;
-  grid-template-columns: 26px 1fr;
-  gap: 12px;
+  position: relative;
+  padding-left: 34px;
   margin-bottom: 12px;
 }
 .steps li::before {
   content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 22px;
+  text-align: right;
   font-family: var(--serif);
   font-size: 15px;
   color: var(--seal);
-  text-align: right;
 }
 
 /* Reference tables scroll on their own rather than pushing the page sideways. */
