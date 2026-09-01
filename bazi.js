@@ -53,7 +53,7 @@
   const ANIMALS = ['Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig'];
   const ANIMALS_CN = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
 
-  // 藏干 — hidden stems inside each branch, main qi (本气) first.
+  // 藏干: hidden stems inside each branch, main qi (本气) first.
   const HIDDEN_STEMS = {
     子: ['癸'],
     丑: ['己', '癸', '辛'],
@@ -181,7 +181,7 @@
 
     // Perturbations by Venus, Jupiter and the Moon. Meeus publishes these
     // arguments on the 1900.0 epoch (T counted from JD 2415020.0), one Julian
-    // century earlier than the J2000 T used above — hence U = T + 1. Feeding
+    // century earlier than the J2000 T used above, hence U = T + 1. Feeding
     // them J2000 T instead roughly doubles the residual error, which is how
     // this was caught.
     const U = T + 1;
@@ -286,12 +286,12 @@
   //           ΔLMT_minutes = 4 × longitudeEast − utcOffsetMinutes.
   //         e.g. Singapore 103.8°E on UTC+8 (480): 4×103.8 − 480 = −64.8 min.
   //
-  //   EoT   Equation of Time — the difference between apparent (sundial) and
+  //   EoT   Equation of Time: the difference between apparent (sundial) and
   //         mean solar time from Earth's orbital eccentricity and axial tilt.
   //         We use the widely-published low-order approximation:
   //           B = 2π(dayOfYear − 81) / 364
   //           EoT_minutes = 9.87·sin(2B) − 7.53·cos(B) − 1.5·sin(B)
-  //         Accurate to roughly ±0.3 min across the year — negligible against a
+  //         Accurate to roughly ±0.3 min across the year, negligible against a
   //         two-hour 时辰.
   //
   // DST is NOT inferred here: pass the clock's actual UTC offset at birth
@@ -327,7 +327,7 @@
     };
   }
 
-  /** 十神 — relationship of another stem to the day master stem. */
+  /** 十神: relationship of another stem to the day master stem. */
   function tenGod(dayStemIndex, otherStemIndex) {
     const dm = STEM_ELEMENTS[dayStemIndex];
     const other = STEM_ELEMENTS[otherStemIndex];
@@ -339,16 +339,16 @@
     return samePolarity ? { cn: '偏印', en: 'Indirect Resource' } : { cn: '正印', en: 'Direct Resource' };
   }
 
-  // --- 大运 — the ten-year luck pillars ------------------------------------
+  // --- 大运, the ten-year luck pillars -------------------------------------
   //
   // Direction (阳男阴女顺行 / 阴男阳女逆行): a yang year stem with a male
   // subject, or a yin year stem with a female subject, steps *forward* through
   // the sexagenary cycle from the month pillar. The other two combinations step
-  // back. The month pillar itself is not a luck pillar — the first one is the
+  // back. The month pillar itself is not a luck pillar; the first one is the
   // next step along.
   //
-  // Starting age (起运数): the distance from birth to the adjacent 节 — the one
-  // ahead when stepping forward, the one behind when stepping back — converted
+  // Starting age (起运数): the distance from birth to the adjacent 节 (the one
+  // ahead when stepping forward, the one behind when stepping back), converted
   // at the classical rate of three days to one year. One day is therefore four
   // months and one hour is five days, which is why exact term instants matter
   // here: a term time wrong by a day moves the starting age by four months.
@@ -425,7 +425,7 @@
       direction: forward ? 'forward' : 'backward',
       directionCn: forward ? '顺行' : '逆行',
       rule: (yangYear ? 'Yang' : 'Yin') + ' year stem ' + STEMS[o.yearStem] + ' with a ' +
-        (male ? 'male' : 'female') + ' subject — ' +
+        (male ? 'male' : 'female') + ' subject, ' +
         (yangYear
           ? (male ? '阳男顺行' : '阳女逆行')
           : (male ? '阴男逆行' : '阴女顺行')) +
@@ -449,6 +449,50 @@
       uncertaintyMonths: ageSlackMonths,
       pillars: pillars,
     };
+  }
+
+  // --- 流年, the annual pillars --------------------------------------------
+  //
+  // The year laid over the ten-year luck pillar. It is the same sexagenary year
+  // the natal year pillar uses, so it turns at 立春 rather than on 1 January,
+  // and it is read the same way: by the relationship of its stem to the Day
+  // Master. Practitioners work the two together, the annual pillar against the
+  // luck pillar it falls inside.
+
+  /**
+   * Which sexagenary year an instant belongs to, honouring the 立春 boundary.
+   * A date in January belongs to the previous year, because 立春 has not
+   * arrived yet.
+   */
+  function solarYearAt(utcMs) {
+    const civilYear = new Date(utcMs).getUTCFullYear();
+    const lichun = termsForYear(civilYear)[1]; // JIE[1] is 立春
+    return utcMs >= lichun.utcMs ? civilYear : civilYear - 1;
+  }
+
+  /** The 流年 pillar for one sexagenary year, read against a day stem. */
+  function annualPillar(solarYear, dayStemIndex) {
+    const offset = (((solarYear - 4) % 60) + 60) % 60;
+    const p = pillar(offset % 10, offset % 12);
+    return {
+      year: solarYear,
+      stem: p.stem,
+      branch: p.branch,
+      label: p.label,
+      stemElement: p.stemElement,
+      branchElement: p.branchElement,
+      hiddenStems: p.hiddenStems,
+      zodiac: { animal: ANIMALS[offset % 12], cn: ANIMALS_CN[offset % 12] },
+      tenGod: tenGod(dayStemIndex, offset % 10),
+      startsAt: termsForYear(solarYear)[1].utcMs, // the 立春 that opens it
+    };
+  }
+
+  /** A run of `count` consecutive 流年 pillars from `startYear`. */
+  function annualPillars(startYear, count, dayStemIndex) {
+    const out = [];
+    for (let i = 0; i < count; i++) out.push(annualPillar(startYear + i, dayStemIndex));
+    return out;
   }
 
   /** Which luck pillar covers `atMs`, or null before the first one opens. */
@@ -493,8 +537,8 @@
    * @param {number} [input.minute] 0–59
    * @param {number} [input.longitude]        birthplace longitude °E (west negative)
    * @param {number} [input.utcOffsetMinutes] the birth clock's UTC offset in minutes
-   *   (e.g. 480 for UTC+8). Enables an exact solar-term boundary, and — together
-   *   with `longitude` and a known birth time — the True Solar Time correction.
+   *   (e.g. 480 for UTC+8). Enables an exact solar-term boundary, and, together
+   *   with `longitude` and a known birth time, the True Solar Time correction.
    * @param {string} [input.gender] 'male' or 'female'. Used only to fix the
    *   direction of the luck pillars (大运), whose classical rule is stated as a
    *   binary of 男 / 女. Omit it and `luckPillars` comes back null.
@@ -590,8 +634,8 @@
         utcOffsetMinutes: utcOff,
         corrected: null,
         note: !timeKnown
-          ? 'Birth time unknown — no hour pillar and no solar-time correction.'
-          : 'Solar-time correction not applied — birth time read as local clock time.',
+          ? 'Birth time unknown: no hour pillar and no solar-time correction.'
+          : 'Solar-time correction not applied: birth time read as local clock time.',
       };
     }
 
@@ -609,7 +653,7 @@
 
     // --- Solar-term boundary ------------------------------------------------
     // A term is an instant in absolute time, so it is compared against the
-    // absolute birth instant — never against the solar-corrected clock, and
+    // absolute birth instant, never against the solar-corrected clock, and
     // never against the 23:00-rolled day.
     //
     // Placing the birth on an absolute timeline needs the clock's UTC offset.
@@ -672,11 +716,11 @@
     const yearStem = yearOffset % 10;
     const yearBranch = yearOffset % 12;
 
-    // 五虎遁 — month stem from year stem
+    // 五虎遁: month stem from year stem
     const firstMonthStem = ((yearStem % 5) * 2 + 2) % 10;
     const monthStem = (firstMonthStem + monthNumber - 1) % 10;
 
-    // --- Hour pillar (五鼠遁 — hour stem from day stem) ---------------------
+    // --- Hour pillar (五鼠遁: hour stem from day stem) -----------------------
     // Uses the corrected hour (effHour) when solar time was applied.
     let hourPillar = null;
     if (effHour !== null) {
@@ -788,6 +832,7 @@
       pillars,
       luckPillars: luck,
       dayMaster: {
+        index: dayStem,
         stem: STEMS[dayStem],
         pinyin: STEM_PINYIN[dayStem],
         element: STEM_ELEMENTS[dayStem],
@@ -853,6 +898,9 @@
     chartSummary,
     termsForYear,
     currentLuckPillar,
+    annualPillar,
+    annualPillars,
+    solarYearAt,
     STEMS,
     BRANCHES,
     ANIMALS,

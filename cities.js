@@ -1,5 +1,5 @@
 /**
- * BaZiCities — a curated world city table for True Solar Time correction.
+ * BaZiCities: a curated world city table for True Solar Time correction.
  *
  * Each entry supplies the two numbers the BaZi engine needs to correct a
  * birth clock time to apparent solar time:
@@ -13,12 +13,12 @@
  *   Taipei, major Chinese cities, Sydney, Melbourne, Vancouver, Toronto,
  *   San Francisco, Los Angeles, New York, London, …).
  * - Longitudes are given to 1 decimal place. 0.1° ≈ 24 s of solar time, so
- *   the resulting correction is well within a minute — finer than the
+ *   the resulting correction is well within a minute, finer than the
  *   day-level solar-term resolution the pillars depend on. Treat the values
  *   as accurate to roughly 0.1–0.5°; they are written from well-established
  *   geographic knowledge, not surveyed.
  * - utcOffsetMinutes is the region's STANDARD time offset. Historical and
- *   seasonal Daylight Saving Time is NOT modelled here — the birth clock may
+ *   seasonal Daylight Saving Time is NOT modelled here: the birth clock may
  *   have read one hour later than standard. The widget therefore offers the
  *   user a "+1h daylight saving" toggle that adds 60 to this value; when in
  *   doubt the standard offset is the safe default.
@@ -381,7 +381,7 @@
    *
    * The whole table is scanned every time. An earlier version stopped once it
    * had `limit` prefix matches, which meant `search('Newcastle', 1)` could only
-   * ever return the first Newcastle in the array — so a shared link naming an
+   * ever return the first Newcastle in the array, so a shared link naming an
    * ambiguous city silently resolved to the wrong hemisphere.
    */
   function search(query, limit) {

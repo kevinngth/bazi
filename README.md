@@ -18,8 +18,8 @@ the visitor's browser.
 - Casts the four pillars from a Gregorian birth date/time, using classical
   rules: solar terms (节气) for the month and year boundaries, the sexagenary
   day cycle via Julian Day Number, 五虎遁 / 五鼠遁 for the month and hour stems.
-- Solar terms are solved **astronomically** — the sun's apparent geocentric
-  longitude, with planetary and lunar perturbations and a ΔT correction — so
+- Solar terms are solved **astronomically**, from the sun's apparent geocentric
+  longitude with planetary and lunar perturbations and a ΔT correction, so
   the year and month pillars turn at the right _moment_, not merely on the
   right day. 立春 2025 fell at 22:09 on 3 February; a birth that morning gets
   the previous year's pillar, as it should.
@@ -30,17 +30,16 @@ the visitor's browser.
   (no correction, stated plainly) without blocking anyone.
 - Explains the **Ten Gods (十神)** in plain English, grouped into the five
   relationships. This is the layer most calculators leave untranslated.
-- Casts the **luck pillars (大运)** — ten ten-year periods stepping forward or
+- Casts the **luck pillars (大运)**: ten ten-year periods stepping forward or
   backward from the month pillar per 阳男阴女顺行 / 阴男阳女逆行, with the
   starting age (起运) counted to the adjacent 节 at three days to the year.
   Each carries its Ten God, its age range and its calendar years, and the
-  period the visitor is in right now is marked. Needs one extra answer —
-  gender — because the classical direction rule is stated as a binary of
-  男 / 女 and cannot be derived from a birth moment. Declining it costs only
-  this section.
-- When a birth genuinely cannot be placed either side of a solar term —
+  period the visitor is in right now is marked. Needs one extra answer, gender,
+  because the classical direction rule is stated as a binary of 男 / 女 and
+  cannot be derived from a birth moment. Declining it costs only this section.
+- When a birth genuinely cannot be placed either side of a solar term, whether
   because the time zone is unknown, the birth time is unknown, or it falls
-  within minutes of the term — shows **both readings side by side** and says
+  within minutes of the term, shows **both readings side by side** and says
   what would settle it, rather than picking one silently.
 - Counts the five elements two ways: at face value, and with hidden stems
   (藏干) weighted 本气 / 中气 / 余气 so every branch is worth one unit. The Ten
@@ -51,6 +50,15 @@ the visitor's browser.
 Nothing on the page is AI-generated. The interpretation text is a fixed
 lookup table keyed off the computed chart.
 
+Both pages carry a full disclaimer separating what is computed (the eight
+characters, which are arithmetic and shown with their working) from what is
+interpretation (everything after them, which is a traditional framework and
+predicts nothing). It also states the accuracy limits, notes that no data
+leaves the browser, and says plainly what to do if a reading is distressing.
+
+House style: no em dashes anywhere in the repo. Use a colon where a clause
+explains, a comma where it is an aside, or split the sentence.
+
 ## Accuracy notes
 
 - Valid for births **1901 to 2100**.
@@ -59,8 +67,8 @@ lookup table keyed off the computed chart.
   A birth within that window of a term is flagged rather than guessed.
 - Placing a birth either side of a term needs the birth clock's UTC offset,
   which comes from the chosen city. **Without a city, a birth within 15 hours
-  of a term cannot be placed** — no time zone is further from UTC than that —
-  and both readings are shown.
+  of a term cannot be placed**, since no time zone is further from UTC than
+  that, and both readings are shown.
 - City longitudes are accurate to ~0.1 to 0.5° (finer than a minute of solar
   time). UTC offsets are **standard** time. Historical daylight saving is not
   inferred, so a summer birth may need the DST toggle.
@@ -69,8 +77,12 @@ lookup table keyed off the computed chart.
   the page says so.
 - The luck-pillar starting age inherits the birth instant's precision: exact
   with a birth time and a city, ±2 to ±5 months without. At three days to the
-  year, a solar term wrong by a day would move it four months — which is why
+  year, a solar term wrong by a day would move it four months, which is why
   the term instants are computed rather than tabulated.
-- **Not implemented:** annual pillars (流年); branch combinations and clashes
-  (六合 / 三合 / 六冲 / 刑 / 害); and the useful god (用神). `guide.html`
-  states these limits to the reader.
+- Casts the **annual pillars (流年)** under each luck pillar: the ten years
+  inside whichever decade is selected, each read against the Day Master, with
+  the current year marked. The year turns at 立春, not on 1 January.
+- **Not implemented:** branch combinations and clashes (六合 / 三合 / 六冲 /
+  刑 / 害), and the useful god (用神). `guide.html` states these limits to the
+  reader, alongside a full disclaimer separating what is computed from what is
+  interpretation.

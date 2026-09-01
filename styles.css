@@ -362,7 +362,7 @@ input:focus { border-color: var(--ink-soft); }
 
 
 /* ── Solar-term boundary: both readings, side by side ────── */
-/* Fires when the birth sits too close to a 节 to place with confidence — the
+/* Fires when the birth sits too close to a 节 to place with confidence: the
    page owes the reader the fork, not a coin flip presented as an answer. */
 .boundary {
   border: 1px solid var(--seal);
@@ -615,17 +615,26 @@ table.ref caption {
   padding: 0;
   min-width: min-content;
 }
+.luck-strip > li { display: flex; flex: 1 0 84px; min-width: 84px; }
 .luck {
   position: relative;
-  flex: 1 0 84px;
-  min-width: 84px;
+  width: 100%;
+  font: inherit;
+  color: inherit;
   background: var(--paper);
   border: 1px solid var(--hair);
   border-radius: 3px;
   padding: 10px 6px 9px;
   text-align: center;
+  cursor: pointer;
 }
+.luck:hover { border-color: var(--field); }
 .luck.is-now { border-color: var(--seal); background: var(--surface); }
+.luck[aria-pressed="true"] {
+  border-color: var(--seal);
+  box-shadow: inset 0 0 0 1px var(--seal);
+  background: var(--surface);
+}
 .luck-now {
   position: absolute;
   top: -1px; left: -1px; right: -1px;
@@ -679,3 +688,121 @@ table.ref caption {
   .luck-strip { flex-wrap: wrap; }
   .luck { flex: 0 0 calc(20% - 6px); }
 }
+
+
+/* ── Row labels shared by 大运 and 流年 ──────────────────── */
+.row-label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 18px 0 8px;
+}
+.row-label .hz { color: var(--seal); font-weight: normal; }
+.row-label b { font-family: 'Songti SC', 'Noto Serif SC', var(--serif); font-weight: normal; }
+.row-note {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: normal;
+  color: var(--mute);
+  margin-left: auto;
+}
+
+/* ── Annual pillars 流年 ─────────────────────────────────── */
+/* One row of ten years under whichever decade is selected above. Narrower
+   than a luck pillar, because ten of them share the same width. */
+.year-scroll { overflow-x: auto; margin: 0 0 4px; padding-bottom: 4px; }
+.year-strip {
+  display: flex;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: min-content;
+}
+.year {
+  flex: 1 0 66px;
+  min-width: 66px;
+  background: var(--paper);
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  padding: 8px 4px 7px;
+  text-align: center;
+}
+.year.is-now { border-color: var(--seal); background: var(--surface); }
+.year-num {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.year.is-now .year-num { color: var(--seal); font-weight: 600; }
+.year-chars {
+  display: block;
+  font-family: 'Songti SC', 'Noto Serif SC', var(--serif);
+  font-size: 17px;
+  line-height: 1.2;
+  margin: 4px 0 3px;
+}
+.year-god { display: block; font-size: 9.5px; color: var(--mute); line-height: 1.3; }
+.year-god .hz {
+  display: block;
+  font-family: 'Songti SC', 'Noto Serif SC', var(--serif);
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+.year-age {
+  display: block;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--hair);
+  font-size: 9.5px;
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  .year-scroll { overflow: visible; }
+  .year-strip { flex-wrap: wrap; }
+  .year { flex: 0 0 calc(20% - 4px); }
+}
+
+/* ── The full disclaimer ─────────────────────────────────── */
+/* Deliberately a card in the flow rather than small print in the footer: if it
+   matters enough to say, it matters enough to be legible. */
+.disclaimer-card { border-top: 2px solid var(--gold); }
+.disc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px 26px;
+  margin-top: 16px;
+}
+.disc-item h3 {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--seal);
+  margin: 0 0 5px;
+}
+.disc-item p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.disc-foot {
+  margin: 20px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--hair);
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+/* "none" rather than a dash, in the hidden-stem table's empty cells. */
+table.ref td.none { color: var(--mute); font-style: italic; }

@@ -94,6 +94,13 @@
   function fmtLon(lon) {
     return Math.abs(lon).toFixed(1) + '°' + (lon < 0 ? 'W' : 'E');
   }
+  /** Split a Unix ms value into calendar parts, treating it as already local. */
+  function localParts(ms) {
+    var d = new Date(ms);
+    return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate(),
+      hour: d.getUTCHours(), minute: d.getUTCMinutes() };
+  }
+
   /** "4 February 2024, 16:24" from the engine's calendar-parts objects. */
   function fmtParts(p) {
     return p.day + ' ' + MONTHS[p.month - 1] + ' ' + p.year + ', ' + pad(p.hour) + ':' + pad(p.minute);
@@ -393,7 +400,7 @@
         'the hour. If you can find your birth time, this resolves to a single chart.';
     } else {
       why = 'Your birth is within a few minutes of the term. Our term instants are accurate to ' +
-        'about five minutes, which is not fine enough to call this one — an almanac or a birth ' +
+        'about five minutes, which is not fine enough to call this one. An almanac or a birth ' +
         'certificate with the minute on it will settle it.';
     }
 
@@ -402,7 +409,7 @@
         '<div class="fork-when">' + esc(label) + '</div>' +
         '<div class="fork-pillars" lang="zh">' +
           c.pillars.year.label + ' ' + c.pillars.month.label + '<br>' +
-          c.pillars.day.label + ' ' + (c.pillars.hour ? c.pillars.hour.label : '——') +
+          c.pillars.day.label + ' ' + (c.pillars.hour ? c.pillars.hour.label : '\u3000\u3000') +
         '</div>' +
         '<div class="fork-note">' + esc(note) + '</div></div>';
     }
@@ -439,8 +446,12 @@
     box.hidden = false;
   }
 
-  /* 大运. The direction rule needs a binary that the form may not have been
-     given, so the card explains what is missing rather than disappearing. */
+  /* 大运 and 流年. The luck pillars are a row of ten-year periods; the annual
+     pillars are the years inside whichever one is selected. Practitioners read
+     the two together, so selecting a decade swaps the year row beneath it. */
+
+  var selectedLuck = null;   // 1-based index of the luck pillar on show
+
   function renderLuck(chart) {
     var box = $('luck');
     var L = chart.luckPillars;
@@ -449,53 +460,125 @@
       box.innerHTML =
         '<p class="luck-empty">Luck pillars need one more answer: whether the classical rule ' +
         'should treat this chart as 男 or 女. It fixes the <em>direction</em> the ten-year ' +
-        'periods run — forward or backward from your month pillar — and there is no way to ' +
+        'periods run, forward or backward from your month pillar, and there is no way to ' +
         'derive it from a birth moment. Choose Male or Female under <b>Gender</b> above and ' +
-        'they will appear here.</p>';
+        'they will appear here, with the year-by-year 流年 underneath.</p>';
       return;
     }
 
-    var nowIndex = window.BaZi.currentLuckPillar(L, birthInstantMs(chart), Date.now());
+    var birthMs = birthInstantMs(chart);
+    var nowLuck = window.BaZi.currentLuckPillar(L, birthMs, Date.now());
+    if (selectedLuck === null) selectedLuck = nowLuck || 1;
 
     var slack = L.uncertaintyMonths
-      ? ' Give or take about ' + L.uncertaintyMonths + ' months — ' +
-        (chart.input.timeKnown
-          ? 'without a birthplace we cannot fix the birth instant exactly.'
-          : 'without a birth time we cannot fix the birth instant exactly.')
+      ? ' Give or take about ' + L.uncertaintyMonths + ' months, because without ' +
+        (chart.input.timeKnown ? 'a birthplace' : 'a birth time') +
+        ' we cannot fix the birth instant exactly.'
       : '';
 
     var head =
       '<p class="luck-lede"><b>' + esc(L.startAge.years) + ' years' +
       (L.startAge.months ? ' ' + esc(L.startAge.months) + ' months' : '') +
-      '</b> old when the first pillar opens, in ' + esc(L.startDate.year) + '.' +
-      ' Counted from your birth to ' + esc(L.anchorTerm.name) + ', the ' +
-      esc(L.anchorTerm.which) + ' solar term — ' + esc(L.daysToTerm) +
+      '</b> old when the first pillar opens, in ' + esc(L.startDate.year) + '. ' +
+      'Counted from your birth to ' + esc(L.anchorTerm.name) + ', the ' +
+      esc(L.anchorTerm.which) + ' solar term: ' + esc(L.daysToTerm) +
       ' days, at the classical rate of three days to one year.' + esc(slack) + '</p>' +
       '<p class="luck-rule">' + esc(L.rule) + '</p>';
 
     var rows = L.pillars.map(function (p) {
-      var isNow = p.index === nowIndex;
-      return '<li class="luck' + (isNow ? ' is-now' : '') + '"' +
-        (isNow ? ' aria-current="true"' : '') + '>' +
+      var isNow = p.index === nowLuck;
+      var isOpen = p.index === selectedLuck;
+      return '<li><button type="button" class="luck' + (isNow ? ' is-now' : '') + '"' +
+        ' data-luck="' + p.index + '" aria-pressed="' + (isOpen ? 'true' : 'false') + '">' +
         (isNow ? '<span class="luck-now">Now</span>' : '') +
-        '<span class="luck-ages">' + Math.floor(p.startAge) + '–' + Math.floor(p.endAge) + '</span>' +
+        '<span class="luck-ages">' + Math.floor(p.startAge) + '\u2013' + Math.floor(p.endAge) + '</span>' +
         '<span class="luck-chars" lang="zh">' + p.stem + '<br>' + p.branch + '</span>' +
         '<span class="luck-god">' + esc(p.tenGod.en) +
           '<span class="hz" lang="zh">' + p.tenGod.cn + '</span></span>' +
-        '<span class="luck-years">' + p.startYear + '–' + p.endYear + '</span>' +
-        '</li>';
+        '<span class="luck-years">' + p.startYear + '\u2013' + p.endYear + '</span>' +
+        '</button></li>';
     }).join('');
 
     box.innerHTML = head +
+      '<h3 class="row-label">Ten-year pillars <span class="hz" lang="zh">大运</span></h3>' +
       '<div class="luck-scroll"><ol class="luck-strip" aria-label="Ten-year luck pillars">' +
       rows + '</ol></div>' +
-      (nowIndex
+      (nowLuck
         ? '<p class="note">You are currently in <b lang="zh">' +
-          L.pillars[nowIndex - 1].label + '</b> — ' + esc(L.pillars[nowIndex - 1].tenGod.en) +
-          ', ages ' + Math.floor(L.pillars[nowIndex - 1].startAge) + ' to ' +
-          Math.floor(L.pillars[nowIndex - 1].endAge) + '.</p>'
+          L.pillars[nowLuck - 1].label + '</b>, ' + esc(L.pillars[nowLuck - 1].tenGod.en) +
+          ', ages ' + Math.floor(L.pillars[nowLuck - 1].startAge) + ' to ' +
+          Math.floor(L.pillars[nowLuck - 1].endAge) + '.</p>'
         : '<p class="note">The first luck pillar has not opened yet. Until it does, the natal ' +
-          'chart stands on its own.</p>');
+          'chart stands on its own.</p>') +
+      '<div id="annual"></div>';
+
+    box.querySelectorAll('[data-luck]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        selectedLuck = Number(btn.dataset.luck);
+        renderLuck(chart);
+        revealStrips();
+        var again = $('luck').querySelector('[data-luck="' + selectedLuck + '"]');
+        if (again) again.focus();
+      });
+    });
+
+    renderAnnual(chart, nowLuck);
+  }
+
+  /** Bring both marked cells into view. Needs the card to be laid out already. */
+  function revealStrips() {
+    revealMarked(document.querySelector('.luck-scroll'), '[aria-pressed="true"]');
+    revealMarked(document.querySelector('.year-scroll'), '.year.is-now');
+  }
+
+  /** Scroll a strip horizontally so its marked cell is centred in view.
+   *  Measured with getBoundingClientRect rather than offsetLeft, which is
+   *  relative to the nearest positioned ancestor and not to the scroller. */
+  function revealMarked(scroller, selector) {
+    if (!scroller) return;
+    var mark = scroller.querySelector(selector);
+    if (!mark) return;
+    var m = mark.getBoundingClientRect();
+    var s = scroller.getBoundingClientRect();
+    var delta = (m.left - s.left) - (scroller.clientWidth - m.width) / 2;
+    scroller.scrollLeft = Math.max(0, scroller.scrollLeft + delta);
+  }
+
+  /* 流年. The ten years inside the selected luck pillar, each read against the
+     Day Master the same way the natal characters are. The year turns at 立春,
+     not on 1 January, so a January date still belongs to the year before. */
+  function renderAnnual(chart, nowLuck) {
+    var box = $('annual');
+    var L = chart.luckPillars;
+    var lp = L.pillars[selectedLuck - 1];
+    var thisYear = window.BaZi.solarYearAt(Date.now());
+    var years = window.BaZi.annualPillars(lp.startYear, 10, chart.dayMaster.index);
+    var birthSolarYear = window.BaZi.solarYearAt(birthInstantMs(chart));
+
+    var cells = years.map(function (a) {
+      var isNow = a.year === thisYear;
+      return '<li class="year' + (isNow ? ' is-now' : '') + '"' +
+        (isNow ? ' aria-current="date"' : '') + '>' +
+        '<span class="year-num">' + a.year + '</span>' +
+        '<span class="year-chars" lang="zh">' + a.stem + a.branch + '</span>' +
+        '<span class="year-god">' + esc(a.tenGod.en) +
+          '<span class="hz" lang="zh">' + a.tenGod.cn + '</span></span>' +
+        '<span class="year-age">age ' + (a.year - birthSolarYear) + '</span>' +
+        '</li>';
+    }).join('');
+
+    var isCurrentDecade = selectedLuck === nowLuck;
+    box.innerHTML =
+      '<h3 class="row-label">Years inside <b lang="zh">' + lp.label + '</b> ' +
+      '<span class="hz" lang="zh">流年</span>' +
+      '<span class="row-note">' + (isCurrentDecade ? 'the decade you are in now' :
+        'ages ' + Math.floor(lp.startAge) + ' to ' + Math.floor(lp.endAge)) + '</span></h3>' +
+      '<div class="year-scroll"><ol class="year-strip" aria-label="Annual pillars inside ' +
+      esc(lp.label) + '">' + cells + '</ol></div>' +
+      '<p class="note">Each year is read against your Day Master exactly as the natal ' +
+      'characters are, then weighed against the ten-year pillar it sits inside. The year ' +
+      'turns at 立春 in early February, so January belongs to the year before. ' +
+      'Select a different decade above to see its years.</p>';
   }
 
   /** The birth instant in Unix ms, matching how the engine placed it. */
@@ -527,18 +610,18 @@
     var tb = chart.termBoundary;
     var rows = [
       ['Solar month', chart.solarMonth.number + ', governed by ' + esc(chart.solarMonth.governingTerm)],
-      ['Governing solar term', esc(tb.governing.name) + ' ' + esc(tb.governing.en) + ' — sun at ' +
+      ['Governing solar term', esc(tb.governing.name) + ' ' + esc(tb.governing.en) + ', sun at ' +
         tb.governing.longitude + '°, ' +
         (tb.governing.local
           ? esc(fmtParts(tb.governing.local)) + ' local'
           : esc(fmtParts(tb.governing.chinaStandard)) + ' China Standard Time')],
-      ['Next solar term', esc(tb.next.name) + ' — ' +
+      ['Next solar term', esc(tb.next.name) + ', ' +
         (tb.next.local
           ? esc(fmtParts(tb.next.local)) + ' local'
           : esc(fmtParts(tb.next.chinaStandard)) + ' China Standard Time')],
       ['Boundary confidence', tb.ambiguous
         ? 'too close to call (±' + tb.uncertaintyMinutes + ' min)'
-        : 'settled — ' + tb.hoursSinceGoverning.toFixed(0) + ' h after ' + esc(tb.governing.name) +
+        : 'settled, ' + tb.hoursSinceGoverning.toFixed(0) + ' h after ' + esc(tb.governing.name) +
           ', ' + tb.hoursUntilNext.toFixed(0) + ' h before ' + esc(tb.next.name)],
       ['Day boundary', esc(chart.conventions.dayBoundary)],
       ['Time basis', esc(chart.conventions.timezone)],
@@ -551,11 +634,19 @@
     }
     if (chart.luckPillars) {
       var L = chart.luckPillars;
-      rows.push(['Luck pillar direction', esc(L.directionCn) + ' ' + esc(L.direction) + ' — ' + esc(L.rule)]);
+      rows.push(['Luck pillar direction', esc(L.directionCn) + ' ' + esc(L.direction) + '. ' + esc(L.rule)]);
       rows.push(['Starting age 起运', esc(L.daysToTerm) + ' days to ' + esc(L.anchorTerm.name) +
         ' ÷ 3 = ' + esc(L.startAge.years) + ' y ' + esc(L.startAge.months) + ' m' +
         (L.uncertaintyMonths ? ' (±' + L.uncertaintyMonths + ' months)' : '')]);
     }
+    var solarNow = window.BaZi.solarYearAt(Date.now());
+    var annualNow = window.BaZi.annualPillar(solarNow, chart.dayMaster.index);
+    rows.push(['Current annual pillar 流年',
+      esc(annualNow.label) + ' ' + esc(annualNow.zodiac.cn + ' ' + annualNow.zodiac.animal) +
+      ', ' + esc(annualNow.tenGod.cn + ' ' + annualNow.tenGod.en) +
+      '. Opened at 立春, ' + esc(fmtParts(localParts(annualNow.startsAt +
+        (chart.input.utcOffsetMinutes === null ? 480 : chart.input.utcOffsetMinutes) * 60000))) +
+      (chart.input.utcOffsetMinutes === null ? ' China Standard Time' : ' local') + '.']);
     rows.push(['Zodiac', esc(chart.zodiac.cn + ' ' + chart.zodiac.animal) + ' (from the year branch)']);
     rows.push(['Engine', 'Deterministic. Solar terms are solved from the sun’s apparent ' +
       'longitude (Meeus, with ΔT), accurate to about five minutes. The sexagenary day cycle ' +
@@ -676,6 +767,7 @@
     renderPillars(chart);
     renderSolarNote(chart);
     renderBoundary(chart, input);
+    selectedLuck = null;
     renderLuck(chart);
     renderElements(chart);
     renderGods(chart);
@@ -683,6 +775,7 @@
     collapseForm(chart);
 
     $('results').hidden = false;
+    revealStrips();
     $('sr-status').textContent = 'Chart cast. Day Master ' + chart.dayMaster.stem + ', ' +
       dm.name + '. Pillars: ' + chart.pillars.year.label + ', ' + chart.pillars.month.label +
       ', ' + chart.pillars.day.label +
