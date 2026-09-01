@@ -30,6 +30,17 @@ the visitor's browser.
   (no correction, stated plainly) without blocking anyone.
 - Explains the **Ten Gods (十神)** in plain English, grouped into the five
   relationships. This is the layer most calculators leave untranslated.
+- Explains every result **where it appears**, not only in the guide. Selecting a
+  luck pillar or an annual pillar opens a plain-English reading of it: what the
+  relationship is, what it tends to favour, what it tends to strain, and a line
+  on what to do with that. A label like "Direct Wealth" is never left standing
+  on its own.
+- Draws the **five-element cycle** rather than only tallying it, with each
+  element labelled by its relationship to the Day Master, so "Wealth is what I
+  control" is an arrow you can see rather than a rule to memorise.
+- Keeps the long prose behind a **What is this?** disclosure on each card, so
+  the default view is a heading, one line and the data, with the deep dive one
+  click away and the full reference in `guide.html`.
 - Casts the **luck pillars (大运)**: ten ten-year periods stepping forward or
   backward from the month pillar per 阳男阴女顺行 / 阴男阳女逆行, with the
   starting age (起运) counted to the adjacent 节 at three days to the year.

@@ -14,13 +14,14 @@
   --gold:    #8f7330;
   --track:   #ece5d4;
   --field:   #948870;   /* control edges need 3:1 against the field, not a hairline */
+  --on-element: #f8f3e9;  /* glyph drawn on an element node */
 
   /* Element fills, each clearing 3:1 against --track so the bars carry meaning
      rather than decoration. */
   --wood:  #546a43;
   --fire:  #a8391d;
-  --earth: #8a6a2e;
-  --metal: #6f7076;
+  --earth: #86672c;
+  --metal: #6a6b71;
   --water: #41647a;
 
   --serif: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Songti SC', 'Noto Serif SC', serif;
@@ -37,6 +38,7 @@
     --mute:    #9c937f;
     --track:   #2e2a23;
     --field:   #7a7160;
+    --on-element: #191714;
     /* Vermillion and gold tuned for rice paper are unreadable on ink. These
        are the same hues lifted until they clear 5:1 on --surface. --seal in
        particular carries .err and the .boundary panel, so it must be the most
@@ -321,7 +323,6 @@ input:focus { border-color: var(--ink-soft); }
   font-size: 12.5px;
   color: var(--ink-soft);
   line-height: 1.65;
-  max-width: 66ch;
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid var(--hair);
@@ -515,9 +516,9 @@ input:focus { border-color: var(--ink-soft); }
 
 .prose .steps { counter-reset: step; list-style: none; padding-left: 0; }
 /* Absolute positioning, not grid. A grid item is created per child *and* per
-   text run, so `<b>Find yourself.</b> Your Day Master...` split into two items
-   and the trailing prose dropped into the 26px counter column, one word per
-   line. Taking the counter out of flow leaves the content as ordinary text. */
+   text run, so a bolded lead-in followed by prose split into two items and the
+   trailing sentence dropped into the 26px counter column, one word per line.
+   Taking the counter out of flow leaves the content as ordinary text. */
 .steps li {
   counter-increment: step;
   position: relative;
@@ -739,8 +740,6 @@ table.ref caption {
   min-width: min-content;
 }
 .year {
-  flex: 1 0 66px;
-  min-width: 66px;
   background: var(--paper);
   border: 1px solid var(--hair);
   border-radius: 3px;
@@ -787,3 +786,156 @@ table.ref caption {
 
 /* "none" rather than a dash, in the hidden-stem table's empty cells. */
 table.ref td.none { color: var(--mute); font-style: italic; }
+
+/* ── "What is this?" disclosures ─────────────────────────── */
+/* The long explanation each section used to carry, folded away. Default view is
+   a heading, one short line and the data; detail arrives on demand. Inline
+   rather than a modal so it works the same on a phone and stays keyboard and
+   screen-reader native. */
+.explain { margin: 0 0 16px; }
+.explain summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--seal);
+  cursor: pointer;
+  padding: 3px 0;
+  list-style: none;
+  width: fit-content;
+}
+.explain summary::-webkit-details-marker { display: none; }
+.explain summary::before {
+  content: "?";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px; height: 15px;
+  flex: none;
+  font-size: 10px;
+  border: 1px solid var(--seal);
+  border-radius: 50%;
+}
+.explain[open] summary::before { content: "\2013"; }
+.explain-body {
+  margin-top: 8px;
+  padding: 14px 16px;
+  background: var(--paper);
+  border-left: 2px solid var(--gold);
+  border-radius: 0 3px 3px 0;
+}
+.explain-body p { margin: 0 0 10px; font-size: 13.5px; line-height: 1.6; color: var(--ink-soft); }
+.explain-body p:last-child { margin-bottom: 0; }
+.explain-body b { color: var(--ink); font-weight: 600; }
+
+/* ── Reading of one period ───────────────────────────────── */
+/* Opens under the strip when a decade or a year is selected. The gap this fills:
+   the page used to say "you are in the Direct Wealth pillar" and stop there. */
+.meaning {
+  border: 1px solid var(--hair);
+  border-left: 3px solid var(--seal);
+  border-radius: 0 3px 3px 0;
+  background: var(--paper);
+  padding: 16px 18px;
+  margin: 4px 0 18px;
+}
+.meaning-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.meaning-title {
+  font-family: 'Songti SC', 'Noto Serif SC', var(--serif);
+  font-size: 17px;
+  color: var(--ink);
+}
+.meaning-sub { font-size: 12px; color: var(--mute); }
+.meaning-lead { margin: 0 0 8px; font-size: 14.5px; line-height: 1.6; color: var(--ink-soft); }
+.meaning-lead b { color: var(--ink); font-weight: 600; }
+.meaning-lead .hz { font-family: 'Songti SC', 'Noto Serif SC', var(--serif); color: var(--seal); }
+.meaning-fam { margin: 0 0 12px; font-size: 12.5px; line-height: 1.55; color: var(--mute); }
+.meaning-fam b { color: var(--ink-soft); font-weight: 600; }
+.meaning-fam .hz { font-family: 'Songti SC', 'Noto Serif SC', var(--serif); }
+
+.meaning-pair { margin: 0 0 12px; display: grid; gap: 3px 12px; }
+.meaning-pair dt {
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.meaning-pair dt.favours { color: var(--wood); }
+.meaning-pair dt.strains { color: var(--seal); }
+.meaning-pair dd { margin: 0 0 8px; font-size: 13.5px; line-height: 1.55; color: var(--ink-soft); }
+.meaning-pair dd:last-of-type { margin-bottom: 0; }
+.meaning-practice {
+  margin: 0;
+  padding-top: 11px;
+  border-top: 1px solid var(--hair);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.meaning-more { margin: 10px 0 0; font-size: 12px; color: var(--mute); }
+
+@media (min-width: 560px) {
+  .meaning-pair { grid-template-columns: 118px 1fr; align-items: baseline; }
+  .meaning-pair dd { margin-bottom: 4px; }
+}
+
+/* ── Five element cycle ──────────────────────────────────── */
+.cycle { margin: 0 0 18px; }
+.cycle svg { display: block; width: 100%; max-width: 400px; height: auto; margin: 0 auto; }
+.cyc-gen { stroke: var(--ink-soft); stroke-width: 1.4; }
+.cyc-gen-head { fill: var(--ink-soft); }
+.cyc-ctl { stroke: var(--mute); stroke-width: 1; stroke-dasharray: 4 4; opacity: .8; }
+.cyc-ctl-head { fill: var(--mute); }
+.cyc-ring { fill: none; stroke: var(--seal); stroke-width: 2; }
+.cyc-hz {
+  font-family: 'Songti SC', 'Noto Serif SC', var(--serif);
+  font-size: 15px;
+  text-anchor: middle;
+  fill: var(--on-element);
+}
+.cyc-label { font-size: 11.5px; fill: var(--ink); font-family: var(--sans); }
+.cyc-rel { font-size: 10.5px; fill: var(--mute); font-family: var(--sans); }
+.cyc-node.is-dm .cyc-rel { fill: var(--seal); }
+.cycle figcaption {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--mute);
+}
+.cycle figcaption .hz { font-family: 'Songti SC', 'Noto Serif SC', var(--serif); color: var(--ink-soft); }
+.elem-bars { margin-top: 4px; }
+
+/* ── Ten gods: the headline before the breakdown ─────────── */
+.gods-lead {
+  border-left: 2px solid var(--gold);
+  background: var(--paper);
+  padding: 13px 16px;
+  border-radius: 0 3px 3px 0;
+  margin-bottom: 20px;
+}
+.gods-lead-line { margin: 0 0 7px; font-size: 14.5px; line-height: 1.6; color: var(--ink-soft); }
+.gods-lead-line b { color: var(--ink); font-weight: 600; }
+.gods-lead-line .hz { font-family: 'Songti SC', 'Noto Serif SC', var(--serif); color: var(--seal); font-weight: normal; }
+.gods-lead-note { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--mute); }
+
+/* Years are buttons now, like the decades above them. */
+.year-strip > li { display: flex; flex: 1 0 66px; min-width: 66px; }
+.year {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.year:hover { border-color: var(--field); }
+.year[aria-pressed="true"] {
+  border-color: var(--seal);
+  box-shadow: inset 0 0 0 1px var(--seal);
+  background: var(--surface);
+}
+
+@media print {
+  .explain[open] .explain-body { display: block; }
+  .explain summary { display: none; }
+  .meaning { break-inside: avoid; }
+  .cycle { break-inside: avoid; }
+}

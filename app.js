@@ -69,10 +69,87 @@
     'Direct Resource': '正印', 'Indirect Resource': '偏印'
   };
 
+  /* What a Ten God means when it governs a stretch of *time* rather than a
+     natal character. This is the layer the page was missing: a visitor told
+     they are "in the Direct Wealth pillar" had nothing anywhere explaining what
+     that is. Written as plainly as the material allows, and deliberately
+     two-sided, because none of the ten are good or bad. */
+  var GOD_PERIOD = {
+    'Friend': {
+      lead: 'A stretch where you run mostly on your own steam.',
+      favours: 'Working independently, backing your own judgement, peers who operate the way you do',
+      strains: 'Taking direction, sharing credit, depending on someone else\'s timetable',
+      practice: 'A good time to bet on yourself. A harder one to sit quietly inside someone else\'s structure.'
+    },
+    'Rob Wealth': {
+      lead: 'Competitive and fast-moving. Money and resources circulate rather than settle.',
+      favours: 'Hustle, partnerships, competing openly, moving quickly on things',
+      strains: 'Holding on to what you have, lending, splitting money with people',
+      practice: 'Expect resources to move. Be deliberate about who you go in with and what you sign.'
+    },
+    'Eating God': {
+      lead: 'Productive and unhurried. You make things at your own pace and enjoy them.',
+      favours: 'Building, creating, cooking, teaching, raising children, quality of life',
+      strains: 'Urgency, cut-throat competition, work that has to be forced',
+      practice: 'Often the most comfortable period in a chart. Use it to make something that lasts.'
+    },
+    'Hurting Officer': {
+      lead: 'Expressive and unruly. Talent comes out loudly, and rules start to chafe.',
+      favours: 'Creative and public work, performing, arguing a case, doing it your own way',
+      strains: 'Bosses, institutions, procedure, biting your tongue',
+      practice: 'Excellent for work where a distinctive voice is the point. Friction where it is not.'
+    },
+    'Direct Wealth': {
+      lead: 'Steady earning and accumulation. Income you work for and keep.',
+      favours: 'Salaried growth, saving, property, commitments that reward consistency',
+      strains: 'Speculation, sudden pivots, anything that needs a gamble to pay off',
+      practice: 'A period that rewards showing up and compounding rather than swinging for a windfall.'
+    },
+    'Indirect Wealth': {
+      lead: 'Opportunistic money. Deals, ventures, windfalls and a wider circle.',
+      favours: 'Business, sales, investing, networks, spotting an opening and taking it',
+      strains: 'Keeping what arrives, routine, narrow focus',
+      practice: 'More comes past you than usual. The skill this period asks for is deciding what to keep.'
+    },
+    'Direct Officer': {
+      lead: 'Structure, status and responsibility.',
+      favours: 'Promotion, titles, formal roles, reputation, rules you have agreed to work inside',
+      strains: 'Improvising, autonomy, anything that needs you to ignore the process',
+      practice: 'Good for climbing a ladder that already exists. Confining if you need room to move.'
+    },
+    'Seven Killings': {
+      lead: 'Pressure and challenge. Deadlines, rivals, high stakes, decisions made fast.',
+      favours: 'Crisis work, competition, turnarounds, anything with a real opponent',
+      strains: 'Rest, patience, situations with no clear enemy to push against',
+      practice: 'Demanding, and for many charts the decade where the most actually gets done.'
+    },
+    'Direct Resource': {
+      lead: 'Support and learning. A period to absorb rather than output.',
+      favours: 'Study, credentials, mentors, care from others, consolidating what you know',
+      strains: 'Fast output, self-promotion, going it alone',
+      practice: 'Slower on the surface and often the groundwork that a later period spends.'
+    },
+    'Indirect Resource': {
+      lead: 'Unconventional learning and inward focus.',
+      favours: 'Niche expertise, research, intuition, solitary or specialist work',
+      strains: 'Conventional paths, large groups, work that needs constant visibility',
+      practice: 'Insightful, and can drift into isolation if there is nothing concrete to apply it to.'
+    }
+  };
+
   var ELEMENT_HZ = { Wood: '木', Fire: '火', Earth: '土', Metal: '金', Water: '水' };
   var ELEMENT_VAR = { Wood: '--wood', Fire: '--fire', Earth: '--earth', Metal: '--metal', Water: '--water' };
   var ELEMENTS = ['Wood', 'Fire', 'Earth', 'Metal', 'Water'];
   var GENERATES = { Wood: 'Fire', Fire: 'Earth', Earth: 'Metal', Metal: 'Water', Water: 'Wood' };
+  var CONTROLS = { Wood: 'Earth', Earth: 'Water', Water: 'Fire', Fire: 'Metal', Metal: 'Wood' };
+
+  /** The family a Ten God belongs to, and what that family is about. */
+  function familyOf(godName) {
+    for (var i = 0; i < FAMILIES.length; i++) {
+      if (FAMILIES[i].gods.indexOf(godName) >= 0) return FAMILIES[i];
+    }
+    return null;
+  }
 
   var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
@@ -274,6 +351,130 @@
 
   // ── Rendering ──────────────────────────────────────────────────────────
 
+  /* A plain-English reading of one Ten God as a period. This is what a visitor
+     gets when they select a decade or a year: what it is, what it favours, what
+     it strains, and a line on what to do about it. The deep dive stays one link
+     away rather than being pasted in here. */
+  function periodPanel(god, heading, subheading) {
+    var info = GOD_PERIOD[god.en];
+    var fam = familyOf(god.en);
+    if (!info) return '';
+    return '<div class="meaning">' +
+      '<div class="meaning-head">' +
+        '<span class="meaning-title">' + esc(heading) + '</span>' +
+        '<span class="meaning-sub">' + esc(subheading) + '</span>' +
+      '</div>' +
+      '<p class="meaning-lead"><b>' + esc(god.en) + ' <span class="hz" lang="zh">' + god.cn +
+        '</span></b> ' + esc(info.lead) + '</p>' +
+      (fam ? '<p class="meaning-fam">One of the <b>' + esc(fam.name) + '</b> ' +
+        '<span class="hz" lang="zh">' + fam.hz + '</span> relationships: ' +
+        esc(fam.what.charAt(0).toLowerCase() + fam.what.slice(1)) + '</p>' : '') +
+      '<dl class="meaning-pair">' +
+        '<dt class="favours">Tends to favour</dt><dd>' + esc(info.favours) + '</dd>' +
+        '<dt class="strains">Tends to strain</dt><dd>' + esc(info.strains) + '</dd>' +
+      '</dl>' +
+      '<p class="meaning-practice">' + esc(info.practice) + '</p>' +
+      '<p class="meaning-more"><a href="guide.html#ten-gods">What the Ten Gods are &rarr;</a>' +
+      ' &nbsp;·&nbsp; <a href="guide.html#period-table">All ten, side by side &rarr;</a></p>' +
+      '</div>';
+  }
+
+  /* The five elements as the cycle they actually are, with each one labelled by
+     its relationship to the Day Master. A reader who cannot hold "Wealth is what
+     I control" in their head can see the arrow instead. Node size follows the
+     chart's weighted element totals, so the shape of the chart is in the picture.
+     Drawn rather than described because the relationships are geometric. */
+  function elementCycle(chart) {
+    var order = ['Wood', 'Fire', 'Earth', 'Metal', 'Water']; // the generating cycle
+    var dm = chart.dayMaster.element;
+    var w = chart.elementWeights;
+    var maxW = Math.max.apply(null, order.map(function (e) { return w[e] || 0; })) || 1;
+
+    // The box has to hold the outer labels, not just the pentagon: "Authority"
+    // sits well clear of the Fire node and was being clipped at 340 wide.
+    var W = 420, H = 340, cx = 210, cy = 165, R = 98;
+    var pts = order.map(function (el, i) {
+      var a = (-90 + i * 72) * Math.PI / 180;
+      return { el: el, x: cx + R * Math.cos(a), y: cy + R * Math.sin(a),
+               r: 15 + 13 * ((w[el] || 0) / maxW), a: a };
+    });
+
+    /* Stop an arrow short of the node it points at, so the head sits on the
+       circle's edge rather than under it. */
+    function edge(from, to, pad) {
+      var dx = to.x - from.x, dy = to.y - from.y;
+      var d = Math.sqrt(dx * dx + dy * dy) || 1;
+      return { x1: from.x + (dx / d) * (from.r + 4), y1: from.y + (dy / d) * (from.r + 4),
+               x2: to.x - (dx / d) * (to.r + pad), y2: to.y - (dy / d) * (to.r + pad) };
+    }
+
+    var generates = '', controls = '';
+    for (var i = 0; i < 5; i++) {
+      var g = edge(pts[i], pts[(i + 1) % 5], 9);
+      generates += '<line x1="' + g.x1.toFixed(1) + '" y1="' + g.y1.toFixed(1) +
+        '" x2="' + g.x2.toFixed(1) + '" y2="' + g.y2.toFixed(1) +
+        '" class="cyc-gen" marker-end="url(#cyc-arrow-gen)"/>';
+      var c = edge(pts[i], pts[(i + 2) % 5], 9);
+      controls += '<line x1="' + c.x1.toFixed(1) + '" y1="' + c.y1.toFixed(1) +
+        '" x2="' + c.x2.toFixed(1) + '" y2="' + c.y2.toFixed(1) +
+        '" class="cyc-ctl" marker-end="url(#cyc-arrow-ctl)"/>';
+    }
+
+    var nodes = pts.map(function (p) {
+      var isDm = p.el === dm;
+      var god = relationLabel(dm, p.el);
+      var reach = R + p.r + 16;
+      var lx = cx + reach * Math.cos(p.a);
+      var ly = cy + reach * Math.sin(p.a);
+      var anchor = Math.abs(lx - cx) < 12 ? 'middle' : (lx > cx ? 'start' : 'end');
+      // Two label lines, stacked away from the centre so they never sit on the
+      // pentagon and never run off the top or bottom of the box.
+      var y1 = ly + (ly < cy ? -6 : 10);
+      return '<g class="cyc-node' + (isDm ? ' is-dm' : '') + '">' +
+        (isDm ? '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) +
+                '" r="' + (p.r + 5).toFixed(1) + '" class="cyc-ring"/>' : '') +
+        '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + p.r.toFixed(1) +
+          '" fill="var(' + ELEMENT_VAR[p.el] + ')"/>' +
+        '<text x="' + p.x.toFixed(1) + '" y="' + (p.y + 5).toFixed(1) +
+          '" class="cyc-hz" lang="zh">' + ELEMENT_HZ[p.el] + '</text>' +
+        '<text x="' + lx.toFixed(1) + '" y="' + y1.toFixed(1) + '" text-anchor="' + anchor +
+          '" class="cyc-label">' + p.el + '</text>' +
+        '<text x="' + lx.toFixed(1) + '" y="' + (y1 + 13).toFixed(1) + '" text-anchor="' + anchor +
+          '" class="cyc-rel">' + esc(isDm ? 'you' : god) + '</text>' +
+        '</g>';
+    }).join('');
+
+    var alt = 'Five element cycle. Your Day Master is ' + dm + '. ' +
+      order.filter(function (e) { return e !== dm; }).map(function (e) {
+        return relationLabel(dm, e) + ' is ' + e + ', weight ' + (w[e] || 0).toFixed(1);
+      }).join('. ') + '.';
+
+    return '<figure class="cycle">' +
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(alt) + '">' +
+      '<defs>' +
+        '<marker id="cyc-arrow-gen" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" ' +
+          'markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" class="cyc-gen-head"/></marker>' +
+        '<marker id="cyc-arrow-ctl" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" ' +
+          'markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 z" class="cyc-ctl-head"/></marker>' +
+      '</defs>' +
+      controls + generates + nodes +
+      '</svg>' +
+      '<figcaption>Solid arrows are the generating cycle <span class="hz" lang="zh">生</span>: ' +
+      'each element feeds the next. Dashed arrows are the controlling cycle ' +
+      '<span class="hz" lang="zh">克</span>: each element restrains the one across from it. ' +
+      'Circle size follows how much of each element your chart carries. Your own element is ringed.' +
+      '</figcaption></figure>';
+  }
+
+  /** The Ten God family name for one element, seen from the Day Master. */
+  function relationLabel(dm, other) {
+    if (other === dm) return 'you';
+    if (GENERATES[dm] === other) return 'Output';
+    if (CONTROLS[dm] === other) return 'Wealth';
+    if (CONTROLS[other] === dm) return 'Authority';
+    return 'Resource';
+  }
+
   function renderPillars(chart) {
     var labels = { year: 'Year 年', month: 'Month 月', day: 'Day 日', hour: 'Hour 时' };
     var html = '';
@@ -314,7 +515,7 @@
         '%;background:var(' + ELEMENT_VAR[el] + ')"></span></span>' +
         '<span class="elem-count">' + shown + '</span></div>';
     });
-    $('elements').innerHTML = html;
+    $('elements').innerHTML = elementCycle(chart) + '<div class="elem-bars">' + html + '</div>';
 
     $('basis-weighted').setAttribute('aria-pressed', String(elementBasis === 'weighted'));
     $('basis-face').setAttribute('aria-pressed', String(elementBasis === 'face'));
@@ -357,7 +558,28 @@
       });
       html += '</div>';
     });
-    $('gods').innerHTML = html;
+    var ranked = FAMILIES.map(function (fam) {
+      return {
+        fam: fam,
+        weight: fam.gods.reduce(function (a, g) { return a + (weights[g] ? weights[g].weight : 0); }, 0)
+      };
+    }).sort(function (a, b) { return b.weight - a.weight; });
+
+    var top = ranked[0], quiet = ranked[ranked.length - 1];
+    var lead = total
+      ? '<div class="gods-lead">' +
+          '<p class="gods-lead-line">Your chart leans hardest on <b>' + esc(top.fam.name) +
+            ' <span class="hz" lang="zh">' + top.fam.hz + '</span></b> (' +
+            Math.round((top.weight / total) * 100) + '%), and carries least <b>' +
+            esc(quiet.fam.name) + ' <span class="hz" lang="zh">' + quiet.fam.hz + '</span></b> (' +
+            Math.round((quiet.weight / total) * 100) + '%).</p>' +
+          '<p class="gods-lead-note">The loudest family is the theme you keep returning to. The ' +
+            'quietest is the thing you tend to build on purpose rather than inherit. Neither is ' +
+            'good or bad.</p>' +
+        '</div>'
+      : '';
+
+    $('gods').innerHTML = lead + html;
 
     var hidden = $('gods').querySelectorAll('.god.zero').length;
     var btn = $('btn-gods-all');
@@ -451,6 +673,7 @@
      the two together, so selecting a decade swaps the year row beneath it. */
 
   var selectedLuck = null;   // 1-based index of the luck pillar on show
+  var selectedYear = null;   // Gregorian year whose reading is on show
 
   function renderLuck(chart) {
     var box = $('luck');
@@ -510,11 +733,13 @@
           Math.floor(L.pillars[nowLuck - 1].endAge) + '.</p>'
         : '<p class="note">The first luck pillar has not opened yet. Until it does, the natal ' +
           'chart stands on its own.</p>') +
+      '<div id="luck-meaning"></div>' +
       '<div id="annual"></div>';
 
     box.querySelectorAll('[data-luck]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         selectedLuck = Number(btn.dataset.luck);
+        selectedYear = null;
         renderLuck(chart);
         revealStrips();
         var again = $('luck').querySelector('[data-luck="' + selectedLuck + '"]');
@@ -522,20 +747,33 @@
       });
     });
 
+    var lp = L.pillars[selectedLuck - 1];
+    $('luck-meaning').innerHTML = periodPanel(
+      lp.tenGod,
+      lp.label + ' \u00b7 ages ' + Math.floor(lp.startAge) + ' to ' + Math.floor(lp.endAge),
+      lp.startYear + '\u2013' + lp.endYear + (lp.index === nowLuck ? ' \u00b7 you are here now' : '')
+    );
+
     renderAnnual(chart, nowLuck);
   }
 
-  /** Bring both marked cells into view. Needs the card to be laid out already. */
+  /* Bring both marked cells into view. Deferred a frame because the results
+     block has only just been unhidden, and a scroller with no layout box yet
+     reports clientWidth 0, which sends the centring maths the wrong way. */
   function revealStrips() {
-    revealMarked(document.querySelector('.luck-scroll'), '[aria-pressed="true"]');
-    revealMarked(document.querySelector('.year-scroll'), '.year.is-now');
+    var run = function () {
+      revealMarked(document.querySelector('.luck-scroll'), '[aria-pressed="true"]');
+      revealMarked(document.querySelector('.year-scroll'), '[data-year][aria-pressed="true"]');
+    };
+    if (window.requestAnimationFrame) requestAnimationFrame(run);
+    else setTimeout(run, 0);
   }
 
   /** Scroll a strip horizontally so its marked cell is centred in view.
    *  Measured with getBoundingClientRect rather than offsetLeft, which is
    *  relative to the nearest positioned ancestor and not to the scroller. */
   function revealMarked(scroller, selector) {
-    if (!scroller) return;
+    if (!scroller || !scroller.clientWidth) return;   // not laid out yet
     var mark = scroller.querySelector(selector);
     if (!mark) return;
     var m = mark.getBoundingClientRect();
@@ -555,16 +793,23 @@
     var years = window.BaZi.annualPillars(lp.startYear, 10, chart.dayMaster.index);
     var birthSolarYear = window.BaZi.solarYearAt(birthInstantMs(chart));
 
+    if (selectedYear === null || years.every(function (a) { return a.year !== selectedYear; })) {
+      var here = years.filter(function (a) { return a.year === thisYear; })[0];
+      selectedYear = here ? here.year : years[0].year;
+    }
+
     var cells = years.map(function (a) {
       var isNow = a.year === thisYear;
-      return '<li class="year' + (isNow ? ' is-now' : '') + '"' +
+      var isOpen = a.year === selectedYear;
+      return '<li><button type="button" class="year' + (isNow ? ' is-now' : '') + '"' +
+        ' data-year="' + a.year + '" aria-pressed="' + (isOpen ? 'true' : 'false') + '"' +
         (isNow ? ' aria-current="date"' : '') + '>' +
         '<span class="year-num">' + a.year + '</span>' +
         '<span class="year-chars" lang="zh">' + a.stem + a.branch + '</span>' +
         '<span class="year-god">' + esc(a.tenGod.en) +
           '<span class="hz" lang="zh">' + a.tenGod.cn + '</span></span>' +
         '<span class="year-age">age ' + (a.year - birthSolarYear) + '</span>' +
-        '</li>';
+        '</button></li>';
     }).join('');
 
     var isCurrentDecade = selectedLuck === nowLuck;
@@ -578,7 +823,29 @@
       '<p class="note">Each year is read against your Day Master exactly as the natal ' +
       'characters are, then weighed against the ten-year pillar it sits inside. The year ' +
       'turns at 立春 in early February, so January belongs to the year before. ' +
-      'Select a different decade above to see its years.</p>';
+      'Select any year for a reading of it, or a different decade above to see its years.</p>' +
+      '<div id="year-meaning"></div>';
+
+    var chosen = years.filter(function (a) { return a.year === selectedYear; })[0];
+    if (chosen) {
+      $('year-meaning').innerHTML = periodPanel(
+        chosen.tenGod,
+        chosen.year + ' \u00b7 ' + chosen.label + ' ' + chosen.zodiac.cn + ' ' + chosen.zodiac.animal,
+        'age ' + (chosen.year - birthSolarYear) +
+          (chosen.year === thisYear ? ' \u00b7 this year' : '') +
+          ' \u00b7 inside ' + lp.label
+      );
+    }
+
+    box.querySelectorAll('[data-year]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        selectedYear = Number(btn.dataset.year);
+        renderAnnual(chart, nowLuck);
+        revealStrips();
+        var again = $('annual').querySelector('[data-year="' + selectedYear + '"]');
+        if (again) again.focus();
+      });
+    });
   }
 
   /** The birth instant in Unix ms, matching how the engine placed it. */
@@ -768,6 +1035,7 @@
     renderSolarNote(chart);
     renderBoundary(chart, input);
     selectedLuck = null;
+    selectedYear = null;
     renderLuck(chart);
     renderElements(chart);
     renderGods(chart);
