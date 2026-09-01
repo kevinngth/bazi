@@ -1,6 +1,6 @@
 # BaZi Calculator: standalone webapp
 
-A self-contained BaZi (八字 / Four Pillars of Destiny) calculator. Six static
+A self-contained BaZi (八字 / Four Pillars of Destiny) calculator. Seven static
 files, no build step, no dependencies, no network calls. Everything runs in
 the visitor's browser.
 
@@ -50,11 +50,17 @@ the visitor's browser.
 Nothing on the page is AI-generated. The interpretation text is a fixed
 lookup table keyed off the computed chart.
 
-Both pages carry a full disclaimer separating what is computed (the eight
-characters, which are arithmetic and shown with their working) from what is
-interpretation (everything after them, which is a traditional framework and
-predicts nothing). It also states the accuracy limits, notes that no data
-leaves the browser, and says plainly what to do if a reading is distressing.
+`disclaimer.html` holds the full disclaimer: what is computed (the eight
+characters, arithmetic and shown with their working) versus what is
+interpretation (everything after them, a traditional framework that predicts
+nothing), the accuracy limits, what it must not be used for, how birth data is
+handled, what to do if a reading is distressing, and a limitation of liability
+disclaiming warranty and damages. Every page carries a condensed version in its
+footer with a link to the full page.
+
+The liability section is written in plain English and has **not** been reviewed
+by a lawyer. If this is published commercially, or anywhere with consumer
+protection rules that bite, have counsel check it.
 
 House style: no em dashes anywhere in the repo. Use a colon where a clause
 explains, a comma where it is an aside, or split the sentence.
@@ -84,5 +90,4 @@ explains, a comma where it is an aside, or split the sentence.
   the current year marked. The year turns at 立春, not on 1 January.
 - **Not implemented:** branch combinations and clashes (六合 / 三合 / 六冲 /
   刑 / 害), and the useful god (用神). `guide.html` states these limits to the
-  reader, alongside a full disclaimer separating what is computed from what is
-  interpretation.
+  reader, and `disclaimer.html` carries the full disclaimer.

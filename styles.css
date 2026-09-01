@@ -39,8 +39,8 @@
     --field:   #7a7160;
     /* Vermillion and gold tuned for rice paper are unreadable on ink. These
        are the same hues lifted until they clear 5:1 on --surface. --seal in
-       particular carries .err and .note.warn, so it must be the most legible
-       colour on the page, not the least. */
+       particular carries .err and the .boundary panel, so it must be the most
+       legible colour on the page, not the least. */
     --seal:    #e2795f;
     --seal-solid: #a63f23;   /* the stamp stays deep; its glyph stays cream */
     --gold:    #d9b877;
@@ -263,7 +263,6 @@ input:focus { border-color: var(--ink-soft); }
 .p-hidden b { font-weight: normal; color: var(--ink-soft); }
 
 .note { margin: 14px 0 0; font-size: 12px; color: var(--mute); line-height: 1.55; }
-.note.warn { color: var(--seal); }
 
 /* ── Elements ───────────────────────────────────────────── */
 .elem-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 13px; }
@@ -318,7 +317,15 @@ input:focus { border-color: var(--ink-soft); }
 
 .site-foot { padding: 22px 20px 40px; font-size: 12px; color: var(--mute); line-height: 1.6; }
 .site-foot p { margin: 0 0 6px; }
-.site-foot .disclaimer { font-style: italic; }
+.site-foot .disclaimer {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height: 1.65;
+  max-width: 66ch;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hair);
+}
 
 .visually-hidden {
   position: absolute;
@@ -769,39 +776,6 @@ table.ref caption {
   .year-scroll { overflow: visible; }
   .year-strip { flex-wrap: wrap; }
   .year { flex: 0 0 calc(20% - 4px); }
-}
-
-/* ── The full disclaimer ─────────────────────────────────── */
-/* Deliberately a card in the flow rather than small print in the footer: if it
-   matters enough to say, it matters enough to be legible. */
-.disclaimer-card { border-top: 2px solid var(--gold); }
-.disc-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 18px 26px;
-  margin-top: 16px;
-}
-.disc-item h3 {
-  font-family: var(--sans);
-  font-size: 11px;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-  color: var(--seal);
-  margin: 0 0 5px;
-}
-.disc-item p {
-  margin: 0;
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--ink-soft);
-}
-.disc-foot {
-  margin: 20px 0 0;
-  padding-top: 14px;
-  border-top: 1px solid var(--hair);
-  font-size: 13.5px;
-  color: var(--ink-soft);
-  font-style: italic;
 }
 
 /* "none" rather than a dash, in the hidden-stem table's empty cells. */
