@@ -98,6 +98,12 @@
   function fmtParts(p) {
     return p.day + ' ' + MONTHS[p.month - 1] + ' ' + p.year + ', ' + pad(p.hour) + ':' + pad(p.minute);
   }
+  /** The chosen gender, or null for "rather not say". */
+  function selectedGender() {
+    var picked = document.querySelector('input[name="gender"]:checked');
+    return picked && picked.value ? picked.value : null;
+  }
+
   function reduceMotion() {
     return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
@@ -433,6 +439,72 @@
     box.hidden = false;
   }
 
+  /* 大运. The direction rule needs a binary that the form may not have been
+     given, so the card explains what is missing rather than disappearing. */
+  function renderLuck(chart) {
+    var box = $('luck');
+    var L = chart.luckPillars;
+
+    if (!L) {
+      box.innerHTML =
+        '<p class="luck-empty">Luck pillars need one more answer: whether the classical rule ' +
+        'should treat this chart as 男 or 女. It fixes the <em>direction</em> the ten-year ' +
+        'periods run — forward or backward from your month pillar — and there is no way to ' +
+        'derive it from a birth moment. Choose Male or Female under <b>Gender</b> above and ' +
+        'they will appear here.</p>';
+      return;
+    }
+
+    var nowIndex = window.BaZi.currentLuckPillar(L, birthInstantMs(chart), Date.now());
+
+    var slack = L.uncertaintyMonths
+      ? ' Give or take about ' + L.uncertaintyMonths + ' months — ' +
+        (chart.input.timeKnown
+          ? 'without a birthplace we cannot fix the birth instant exactly.'
+          : 'without a birth time we cannot fix the birth instant exactly.')
+      : '';
+
+    var head =
+      '<p class="luck-lede"><b>' + esc(L.startAge.years) + ' years' +
+      (L.startAge.months ? ' ' + esc(L.startAge.months) + ' months' : '') +
+      '</b> old when the first pillar opens, in ' + esc(L.startDate.year) + '.' +
+      ' Counted from your birth to ' + esc(L.anchorTerm.name) + ', the ' +
+      esc(L.anchorTerm.which) + ' solar term — ' + esc(L.daysToTerm) +
+      ' days, at the classical rate of three days to one year.' + esc(slack) + '</p>' +
+      '<p class="luck-rule">' + esc(L.rule) + '</p>';
+
+    var rows = L.pillars.map(function (p) {
+      var isNow = p.index === nowIndex;
+      return '<li class="luck' + (isNow ? ' is-now' : '') + '"' +
+        (isNow ? ' aria-current="true"' : '') + '>' +
+        (isNow ? '<span class="luck-now">Now</span>' : '') +
+        '<span class="luck-ages">' + Math.floor(p.startAge) + '–' + Math.floor(p.endAge) + '</span>' +
+        '<span class="luck-chars" lang="zh">' + p.stem + '<br>' + p.branch + '</span>' +
+        '<span class="luck-god">' + esc(p.tenGod.en) +
+          '<span class="hz" lang="zh">' + p.tenGod.cn + '</span></span>' +
+        '<span class="luck-years">' + p.startYear + '–' + p.endYear + '</span>' +
+        '</li>';
+    }).join('');
+
+    box.innerHTML = head +
+      '<div class="luck-scroll"><ol class="luck-strip" aria-label="Ten-year luck pillars">' +
+      rows + '</ol></div>' +
+      (nowIndex
+        ? '<p class="note">You are currently in <b lang="zh">' +
+          L.pillars[nowIndex - 1].label + '</b> — ' + esc(L.pillars[nowIndex - 1].tenGod.en) +
+          ', ages ' + Math.floor(L.pillars[nowIndex - 1].startAge) + ' to ' +
+          Math.floor(L.pillars[nowIndex - 1].endAge) + '.</p>'
+        : '<p class="note">The first luck pillar has not opened yet. Until it does, the natal ' +
+          'chart stands on its own.</p>');
+  }
+
+  /** The birth instant in Unix ms, matching how the engine placed it. */
+  function birthInstantMs(chart) {
+    var i = chart.input;
+    var local = Date.UTC(i.year, i.month - 1, i.day, i.timeKnown ? i.hour : 12, i.timeKnown ? i.minute : 0);
+    return i.utcOffsetMinutes !== null ? local - i.utcOffsetMinutes * 60000 : local;
+  }
+
   function renderSolarNote(chart) {
     var s = chart.solar;
     var el = $('solar-note');
@@ -477,6 +549,13 @@
       rows.push(['Equation of time', s.eotMinutes + ' min']);
       rows.push(['Total correction', s.correctionMinutes + ' min']);
     }
+    if (chart.luckPillars) {
+      var L = chart.luckPillars;
+      rows.push(['Luck pillar direction', esc(L.directionCn) + ' ' + esc(L.direction) + ' — ' + esc(L.rule)]);
+      rows.push(['Starting age 起运', esc(L.daysToTerm) + ' days to ' + esc(L.anchorTerm.name) +
+        ' ÷ 3 = ' + esc(L.startAge.years) + ' y ' + esc(L.startAge.months) + ' m' +
+        (L.uncertaintyMonths ? ' (±' + L.uncertaintyMonths + ' months)' : '')]);
+    }
     rows.push(['Zodiac', esc(chart.zodiac.cn + ' ' + chart.zodiac.animal) + ' (from the year branch)']);
     rows.push(['Engine', 'Deterministic. Solar terms are solved from the sun’s apparent ' +
       'longitude (Meeus, with ΔT), accurate to about five minutes. The sexagenary day cycle ' +
@@ -511,6 +590,17 @@
     if (chart.solar && chart.solar.applied) {
       lines.push('True solar time: ' + chart.solar.correctionMinutes + ' min correction applied');
     }
+    if (chart.luckPillars) {
+      var L = chart.luckPillars;
+      lines.push('');
+      lines.push('Luck Pillars 大运 (' + L.directionCn + ', starting at ' + L.startAge.years +
+        'y ' + L.startAge.months + 'm)');
+      L.pillars.forEach(function (p) {
+        lines.push('  ' + String(Math.floor(p.startAge)).padStart(3) + '–' +
+          String(Math.floor(p.endAge)).padEnd(3) + ' ' + p.label + '  ' +
+          p.tenGod.cn + ' ' + p.tenGod.en);
+      });
+    }
     if (chart.termBoundary.ambiguous) {
       lines.push('NOTE: this birth sits on a solar-term boundary and could not be placed with ' +
         'confidence. See the calculator for both readings.');
@@ -541,6 +631,9 @@
       input.hour = t[0];
       input.minute = t[1];
     }
+
+    var gender = selectedGender();
+    if (gender) input.gender = gender;
 
     var dstMinutes = $('in-dst').checked && !dstWrap.hidden ? 60 : 0;
     if (selectedCity && input.hour !== undefined) {
@@ -583,6 +676,7 @@
     renderPillars(chart);
     renderSolarNote(chart);
     renderBoundary(chart, input);
+    renderLuck(chart);
     renderElements(chart);
     renderGods(chart);
     renderBench(chart);
@@ -593,6 +687,10 @@
       dm.name + '. Pillars: ' + chart.pillars.year.label + ', ' + chart.pillars.month.label +
       ', ' + chart.pillars.day.label +
       (chart.pillars.hour ? ', ' + chart.pillars.hour.label : ', hour unknown') + '.' +
+      (chart.luckPillars
+        ? ' Luck pillars run ' + chart.luckPillars.direction + ' from age ' +
+          chart.luckPillars.startAge.years + '.'
+        : '') +
       (chart.termBoundary.ambiguous
         ? ' This birth sits on a solar-term boundary; two readings are shown.'
         : '');
@@ -608,6 +706,7 @@
     if (i.timeKnown) when += ', ' + pad(i.hour) + ':' + pad(i.minute);
     else when += ', time unknown';
     if (selectedCity) when += ' · ' + selectedCity.name;
+    if (i.gender) when += ' · ' + (i.gender === 'male' ? 'Male' : 'Female');
     $('recap-line').innerHTML = '<b>' + esc(when) + '</b>';
     $('form-card').classList.add('is-collapsed');
     $('form-details').hidden = true;
@@ -635,6 +734,8 @@
       p.set('tz', String(selectedCity.utcOffsetMinutes));
     }
     if ($('in-dst').checked && !dstWrap.hidden) p.set('dst', '1');
+    var g = selectedGender();
+    if (g) p.set('gender', g);
     try {
       history.replaceState(null, '', location.pathname + '?' + p.toString());
     } catch (e) { /* file:// or a sandboxed frame: the chart still works */ }
@@ -664,9 +765,11 @@
       }
       if (city) pickCity(city);
     }
+    var g = p.get('gender');
+    if (g === 'male') $('g-male').checked = true;
+    else if (g === 'female') $('g-female').checked = true;
     if (p.get('dst') === '1') $('in-dst').checked = true;
     updateDstVisibility();
-    if (p.get('dst') === '1') $('in-dst').checked = true;
     calculate();
   }
 
@@ -707,6 +810,7 @@
 
   $('btn-reset').addEventListener('click', function () {
     $('bazi-form').reset();
+    $('g-none').checked = true;
     selectedCity = null;
     lastChart = null;
     $('in-time').disabled = false;

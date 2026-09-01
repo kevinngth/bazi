@@ -571,3 +571,111 @@ table.ref caption {
   .toc { display: none !important; }
   .prose { break-inside: auto; }
 }
+
+/* ── Gender radios ───────────────────────────────────────── */
+.radio-field { border: 0; padding: 0; margin: 0 0 22px; min-width: 0; }
+.radio-field legend {
+  padding: 0;
+  font-size: 12px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 7px;
+}
+.radios { display: flex; gap: 8px; flex-wrap: wrap; }
+.radio {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 14px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  background: var(--paper);
+  border: 1px solid var(--field);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.radio input { margin: 0; accent-color: var(--seal); }
+.radio:hover { border-color: var(--seal); color: var(--ink); }
+.radio:has(input:checked) { border-color: var(--seal); color: var(--ink); background: var(--surface); }
+
+/* ── Luck pillars 大运 ───────────────────────────────────── */
+.luck-lede { margin: 0 0 8px; font-size: 14.5px; color: var(--ink-soft); line-height: 1.6; }
+.luck-lede b { color: var(--ink); font-weight: 600; }
+.luck-rule { margin: 0 0 16px; font-size: 12.5px; color: var(--mute); line-height: 1.5; }
+.luck-empty { margin: 0; font-size: 14.5px; color: var(--ink-soft); line-height: 1.65; }
+.luck-empty b { color: var(--ink); font-weight: 600; }
+
+/* Ten pillars will not fit a phone. They scroll as one strip rather than
+   reflowing, because their order is the whole point. */
+.luck-scroll { overflow-x: auto; margin: 0 0 4px; padding-bottom: 4px; }
+.luck-strip {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: min-content;
+}
+.luck {
+  position: relative;
+  flex: 1 0 84px;
+  min-width: 84px;
+  background: var(--paper);
+  border: 1px solid var(--hair);
+  border-radius: 3px;
+  padding: 10px 6px 9px;
+  text-align: center;
+}
+.luck.is-now { border-color: var(--seal); background: var(--surface); }
+.luck-now {
+  position: absolute;
+  top: -1px; left: -1px; right: -1px;
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #f8f3e9;
+  background: var(--seal-solid);
+  border-radius: 2px 2px 0 0;
+  padding: 2px 0 1px;
+}
+.luck.is-now { padding-top: 24px; }
+.luck-ages {
+  display: block;
+  font-size: 10px;
+  letter-spacing: .06em;
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
+}
+.luck.is-now .luck-ages { color: var(--seal); }
+.luck-chars {
+  display: block;
+  font-family: 'Songti SC', 'Noto Serif SC', var(--serif);
+  font-size: 24px;
+  line-height: 1.15;
+  margin: 5px 0 4px;
+}
+.luck-god {
+  display: block;
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  line-height: 1.35;
+}
+.luck-god .hz {
+  display: block;
+  font-family: 'Songti SC', 'Noto Serif SC', var(--serif);
+  color: var(--mute);
+}
+.luck-years {
+  display: block;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid var(--hair);
+  font-size: 10px;
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  .luck-scroll { overflow: visible; }
+  .luck-strip { flex-wrap: wrap; }
+  .luck { flex: 0 0 calc(20% - 6px); }
+}

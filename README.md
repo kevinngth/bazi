@@ -30,6 +30,14 @@ the visitor's browser.
   (no correction, stated plainly) without blocking anyone.
 - Explains the **Ten Gods (十神)** in plain English, grouped into the five
   relationships. This is the layer most calculators leave untranslated.
+- Casts the **luck pillars (大运)** — ten ten-year periods stepping forward or
+  backward from the month pillar per 阳男阴女顺行 / 阴男阳女逆行, with the
+  starting age (起运) counted to the adjacent 节 at three days to the year.
+  Each carries its Ten God, its age range and its calendar years, and the
+  period the visitor is in right now is marked. Needs one extra answer —
+  gender — because the classical direction rule is stated as a binary of
+  男 / 女 and cannot be derived from a birth moment. Declining it costs only
+  this section.
 - When a birth genuinely cannot be placed either side of a solar term —
   because the time zone is unknown, the birth time is unknown, or it falls
   within minutes of the term — shows **both readings side by side** and says
@@ -38,7 +46,7 @@ the visitor's browser.
   (藏干) weighted 本气 / 中气 / 余气 so every branch is worth one unit. The Ten
   Gods use the weighted basis, so the two panels reconcile.
 - Shareable URLs carry the birthplace as coordinates, not a bare name:
-  `?date=1990-06-15&time=07:24&city=Singapore&country=Singapore&lon=103.8&tz=480`.
+  `?date=1990-06-15&time=07:24&city=Singapore&country=Singapore&lon=103.8&tz=480&gender=male`.
 
 Nothing on the page is AI-generated. The interpretation text is a fixed
 lookup table keyed off the computed chart.
@@ -59,6 +67,10 @@ lookup table keyed off the computed chart.
 - The support-balance figure is a simple element ratio, not a full
   strong/weak verdict. Season and branch interactions are not modelled, and
   the page says so.
-- **Not implemented:** luck pillars (大运), which need the subject's sex;
-  branch combinations and clashes (六合 / 三合 / 六冲 / 刑 / 害); and the
-  useful god (用神). `guide.html` states these limits to the reader.
+- The luck-pillar starting age inherits the birth instant's precision: exact
+  with a birth time and a city, ±2 to ±5 months without. At three days to the
+  year, a solar term wrong by a day would move it four months — which is why
+  the term instants are computed rather than tabulated.
+- **Not implemented:** annual pillars (流年); branch combinations and clashes
+  (六合 / 三合 / 六冲 / 刑 / 害); and the useful god (用神). `guide.html`
+  states these limits to the reader.

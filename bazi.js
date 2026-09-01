@@ -339,6 +339,128 @@
     return samePolarity ? { cn: '偏印', en: 'Indirect Resource' } : { cn: '正印', en: 'Direct Resource' };
   }
 
+  // --- 大运 — the ten-year luck pillars ------------------------------------
+  //
+  // Direction (阳男阴女顺行 / 阴男阳女逆行): a yang year stem with a male
+  // subject, or a yin year stem with a female subject, steps *forward* through
+  // the sexagenary cycle from the month pillar. The other two combinations step
+  // back. The month pillar itself is not a luck pillar — the first one is the
+  // next step along.
+  //
+  // Starting age (起运数): the distance from birth to the adjacent 节 — the one
+  // ahead when stepping forward, the one behind when stepping back — converted
+  // at the classical rate of three days to one year. One day is therefore four
+  // months and one hour is five days, which is why exact term instants matter
+  // here: a term time wrong by a day moves the starting age by four months.
+  //
+  // The rule is stated in the classical texts as a binary of 男 and 女, and it
+  // is the only place in this engine where that input is used. Without it the
+  // luck pillars are simply not computed.
+
+  const YEARS_PER_DAY_TO_TERM = 1 / 3;
+  const TROPICAL_YEAR_MS = 365.2422 * DAY_MS;
+
+  /** The 0–59 position of a stem/branch pair in the sexagenary cycle. */
+  function sexagenaryIndex(stemIndex, branchIndex) {
+    for (let n = 0; n < 60; n++) {
+      if (n % 10 === stemIndex && n % 12 === branchIndex) return n;
+    }
+    return -1; // unreachable for a pair the engine produced
+  }
+
+  function computeLuckPillars(o) {
+    const yangYear = o.yearStem % 2 === 0;
+    const male = o.gender === 'male';
+    const forward = yangYear === male;
+    const dir = forward ? 1 : -1;
+
+    // Distance to the 节 we count against.
+    const msToTerm = forward
+      ? o.nextTermUtcMs - o.birthUtcMs
+      : o.birthUtcMs - o.governingTermUtcMs;
+    const daysToTerm = msToTerm / DAY_MS;
+    const totalYears = daysToTerm * YEARS_PER_DAY_TO_TERM;
+
+    let years = Math.floor(totalYears);
+    let months = Math.round((totalYears - years) * 12);
+    if (months >= 12) { years += 1; months = 0; }
+
+    // Calendar date the first luck pillar opens.
+    const start = new Date(Date.UTC(o.birthYear + years, o.birthMonth - 1 + months, o.birthDay));
+
+    const monthIndex = sexagenaryIndex(o.monthStem, o.monthBranch);
+    const pillars = [];
+    for (let k = 1; k <= o.count; k++) {
+      const idx = (((monthIndex + dir * k) % 60) + 60) % 60;
+      const p = pillar(idx % 10, idx % 12);
+      const fromAge = totalYears + (k - 1) * 10;
+      const fromYear = start.getUTCFullYear() + (k - 1) * 10;
+      pillars.push({
+        index: k,
+        stem: p.stem,
+        branch: p.branch,
+        label: p.label,
+        stemElement: p.stemElement,
+        branchElement: p.branchElement,
+        hiddenStems: p.hiddenStems,
+        tenGod: tenGod(o.dayStem, STEMS.indexOf(p.stem)),
+        startAge: Math.round(fromAge * 10) / 10,
+        endAge: Math.round((fromAge + 10) * 10) / 10,
+        startYear: fromYear,
+        endYear: fromYear + 10,
+      });
+    }
+
+    // How much slack the inputs leave in the starting age. Three days is one
+    // year, so an unknown hour (±12 h) is worth ±2 months and an unknown time
+    // zone (±15 h) about ±5 months.
+    let ageSlackMonths = 0;
+    if (o.precision === 'exact') ageSlackMonths = 0;
+    else if (o.precision === 'time-unknown') ageSlackMonths = 2;
+    else if (o.precision === 'zone-unknown') ageSlackMonths = 3;
+    else ageSlackMonths = 5;
+
+    return {
+      gender: o.gender,
+      direction: forward ? 'forward' : 'backward',
+      directionCn: forward ? '顺行' : '逆行',
+      rule: (yangYear ? 'Yang' : 'Yin') + ' year stem ' + STEMS[o.yearStem] + ' with a ' +
+        (male ? 'male' : 'female') + ' subject — ' +
+        (yangYear
+          ? (male ? '阳男顺行' : '阳女逆行')
+          : (male ? '阴男逆行' : '阴女顺行')) +
+        ', so the pillars step ' + (forward ? 'forward' : 'backward') +
+        ' from the month pillar.',
+      anchorTerm: {
+        name: forward ? o.nextTermName : o.governingTermName,
+        which: forward ? 'next' : 'previous',
+      },
+      daysToTerm: Math.round(daysToTerm * 100) / 100,
+      startAge: {
+        years: years,
+        months: months,
+        total: Math.round(totalYears * 100) / 100,
+      },
+      startDate: {
+        year: start.getUTCFullYear(),
+        month: start.getUTCMonth() + 1,
+        day: start.getUTCDate(),
+      },
+      uncertaintyMonths: ageSlackMonths,
+      pillars: pillars,
+    };
+  }
+
+  /** Which luck pillar covers `atMs`, or null before the first one opens. */
+  function currentLuckPillar(luck, birthUtcMs, atMs) {
+    if (!luck) return null;
+    const ageYears = (atMs - birthUtcMs) / TROPICAL_YEAR_MS;
+    for (const p of luck.pillars) {
+      if (ageYears >= p.startAge && ageYears < p.endAge) return p.index;
+    }
+    return null;
+  }
+
   // --- Input validation ---------------------------------------------------
 
   function wholeNumber(value, name, lo, hi) {
@@ -373,7 +495,11 @@
    * @param {number} [input.utcOffsetMinutes] the birth clock's UTC offset in minutes
    *   (e.g. 480 for UTC+8). Enables an exact solar-term boundary, and — together
    *   with `longitude` and a known birth time — the True Solar Time correction.
+   * @param {string} [input.gender] 'male' or 'female'. Used only to fix the
+   *   direction of the luck pillars (大运), whose classical rule is stated as a
+   *   binary of 男 / 女. Omit it and `luckPillars` comes back null.
    * @param {Object} [options]
+   * @param {number} [options.luckPillarCount] how many luck pillars to return (default 10)
    * @param {boolean} [options.lateZiSameDay] keep 23:00–23:59 on the current day
    * @param {boolean} [options.useAlternateTerm] internal: cast the chart on the
    *   other side of an ambiguous solar-term boundary
@@ -408,6 +534,18 @@
       input.utcOffsetMinutes === undefined || input.utcOffsetMinutes === null
         ? null
         : finiteNumber(input.utcOffsetMinutes, 'utcOffsetMinutes', -12 * 60, 14 * 60);
+
+    // Only the luck pillars use this, and only because the classical direction
+    // rule is stated as a binary. Omit it and they are not computed.
+    let gender = input.gender === undefined || input.gender === null ? null : input.gender;
+    if (gender !== null) {
+      gender = String(gender).toLowerCase();
+      if (gender === 'm' || gender === '男') gender = 'male';
+      if (gender === 'f' || gender === '女') gender = 'female';
+      if (gender !== 'male' && gender !== 'female') {
+        throw new Error("gender must be 'male', 'female', or omitted");
+      }
+    }
 
     // --- True Solar Time correction ---------------------------------------
     // Only when longitude AND utcOffsetMinutes are both supplied and the birth
@@ -598,6 +736,25 @@
       elementWeights[el] = Math.round(elementWeights[el] * 100) / 100;
     }
 
+    // --- 大运 ---------------------------------------------------------------
+    const luck = gender
+      ? computeLuckPillars({
+          gender: gender,
+          yearStem: yearStem,
+          monthStem: monthStem,
+          monthBranch: monthBranch,
+          dayStem: dayStem,
+          birthYear: year, birthMonth: month, birthDay: day,
+          birthUtcMs: birthUtcMs,
+          governingTermUtcMs: governing.utcMs,
+          nextTermUtcMs: upcoming.utcMs,
+          governingTermName: governing.name,
+          nextTermName: upcoming.name,
+          precision: precision,
+          count: options.luckPillarCount || 10,
+        })
+      : null;
+
     // Legacy shape: the visible-stem ten gods, keyed by pillar.
     const tenGods = {};
     for (const key of ['year', 'month', 'hour']) {
@@ -625,9 +782,11 @@
         timeKnown: timeKnown,
         longitude: lon,
         utcOffsetMinutes: utcOff,
+        gender: gender,
       },
       solar,
       pillars,
+      luckPillars: luck,
       dayMaster: {
         stem: STEMS[dayStem],
         pinyin: STEM_PINYIN[dayStem],
@@ -693,6 +852,7 @@
     computeChart,
     chartSummary,
     termsForYear,
+    currentLuckPillar,
     STEMS,
     BRANCHES,
     ANIMALS,

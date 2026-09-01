@@ -77,6 +77,19 @@
           </label>
         </div>
 
+        <fieldset class="field radio-field">
+          <legend>Gender</legend>
+          <div class="radios">
+            <label class="radio"><input type="radio" name="gender" value="male" id="g-male"><span>Male</span></label>
+            <label class="radio"><input type="radio" name="gender" value="female" id="g-female"><span>Female</span></label>
+            <label class="radio"><input type="radio" name="gender" value="" id="g-none" checked><span>Rather not say</span></label>
+          </div>
+          <p class="hint">Used for one thing only: the direction your luck pillars (大运) run.
+            The classical rule is written as a binary of 男 and 女, and nothing else in the chart
+            uses it. Leave it unanswered and everything but the luck pillars is still cast.
+            <a href="guide.html#luck-pillars">How the direction rule works →</a></p>
+        </fieldset>
+
         <button type="submit" class="btn-primary">Cast my chart</button>
       </div>
       <p class="err" id="form-err" role="alert" hidden></p>
@@ -100,6 +113,15 @@
       <div class="pillars" id="pillars"></div>
       <p class="note" id="solar-note"></p>
       <div class="boundary" id="boundary-note" role="note" hidden></div>
+    </section>
+
+    <section class="card" id="luck-card" aria-labelledby="luck-h">
+      <h2 id="luck-h" class="card-title">Luck Pillars 大运</h2>
+      <p class="card-sub">Ten-year periods, each a stem and branch of its own, laid over the natal
+        chart. Practitioners spend most of a reading here — the chart says what you are, the luck
+        pillars say what season you are in.
+        <a href="guide.html#luck-pillars">How these are derived →</a></p>
+      <div id="luck"></div>
     </section>
 
     <section class="card" aria-labelledby="elem-h">
